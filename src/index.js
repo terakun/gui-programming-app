@@ -1,127 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
-
-class OpComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name:props.name,
-    };
-  }
-}
-
-class Start extends OpComponent {
-  constructor(props){
-    super(props);
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div> START </div>
-      </Draggable>
-    );
-  }
-}
-
-class End extends OpComponent {
-  constructor(props){
-    super(props);
-    this.name = "End";
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div> END </div>
-      </Draggable>
-    );
-  }
-
-}
-
-class RightWheel extends OpComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dir : 0,
-      strength : 0,
-    };
-  }
-  render() {
-    return ( 
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div>RightWheel <input type="text" name="name"/> </div>
-      </Draggable>
-    );
-  }
-}
-
-class LeftWheel extends OpComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dir : 0,
-      strength : 0,
-    };
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div>RightWheel <input type="text" name="name"/> </div>
-      </Draggable>
-    );
-  }
-}
-
-class Waitmsecs extends OpComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      wait_msecs : 0,
-    };
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div>Waitmsecs <input type="text" name="name"/> </div>
-      </Draggable>
-    );
-  }
-}
-
-class BranchDistSensor extends OpComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      dist_cm: 0,
-    };
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div>BranchDistSensor <input type="text" name="name"/> </div>
-      </Draggable>
-    );
-  }
-}
-
-class Stop extends OpComponent {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    return (
-      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div>Stop</div>
-      </Draggable>
-    );
-  }
-}
+import {Start,End,RightWheel,LeftWheel,Waitmsecs,BranchDistSensor,Stop} from './opcomponent'
 
 class Graph {
   constructor() {
     this.edges = [[],[],[]];
-    this.nodes = [ "Start" , "End" , "RightWheel" ];
+    this.nodes = [ "Start" , "End" ];
     this.nodes_num = this.edges.length;
   }
 
@@ -196,7 +81,7 @@ class EditWindow extends React.Component {
             return (<div>Error</div>);
         }
       }) }
-      <svg width="500" height="500">
+      <svg width="1000" height="500">
       {
         this.props.graph.edges.map((nodes,node_from) => {
           return (
@@ -257,7 +142,7 @@ class App extends React.Component {
     const positions = this.state.positions.slice();
     positions.push([0,0]);
     this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component("compname"),
+      graph: this.state.graph.add_component(compname),
       positions: positions,
     }));
   }
