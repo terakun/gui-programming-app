@@ -1,116 +1,132 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Draggable from 'react-draggable';
 
 class OpComponent extends React.Component {
-  constructor(props,id) {
+  constructor(props) {
     super(props);
-    this.id = id;
-    this.name = "";
+    this.state = {
+      name:props.name,
+    };
   }
 }
 
 class Start extends OpComponent {
-  constructor(props,id){
-    super(props,id);
-    this.name = "Start";
+  constructor(props){
+    super(props);
   }
   render() {
     return (
-      <div> START </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div> START </div>
+      </Draggable>
     );
   }
 }
 
 class End extends OpComponent {
-  constructor(props,id){
-    super(props,id);
+  constructor(props){
+    super(props);
     this.name = "End";
   }
   render() {
     return (
-      <div> END </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div> END </div>
+      </Draggable>
     );
   }
 
 }
 
 class RightWheel extends OpComponent {
-  constructor(props,id) {
-    super(props,id);
-    this.dir = 0;
-    this.strength = 0;
-    this.name = "RightWheel";
+  constructor(props) {
+    super(props);
+    this.state = {
+      dir : 0,
+      strength : 0,
+    };
   }
   render() {
     return ( 
-      <div>RightWheel <input type="text" name="name"/> </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div>RightWheel <input type="text" name="name"/> </div>
+      </Draggable>
     );
   }
 }
 
 class LeftWheel extends OpComponent {
-  constructor(props,id) {
-    super(props,id);
-    this.dir = 0;
-    this.strength = 0;
-    this.name = "LeftWheel";
+  constructor(props) {
+    super(props);
+    this.state = {
+      dir : 0,
+      strength : 0,
+    };
   }
   render() {
     return (
-      <div>RightWheel <input type="text" name="name"/> </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div>RightWheel <input type="text" name="name"/> </div>
+      </Draggable>
     );
   }
 }
 
 class Waitmsecs extends OpComponent {
-  constructor(props,id) {
-    super(props,id);
-    this.wait_msecs = 0;
-    this.name = "Waitmsecs";
+  constructor(props) {
+    super(props);
+    this.state = {
+      wait_msecs : 0,
+    };
   }
   render() {
     return (
-      <div>Waitmsecs <input type="text" name="name"/> </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div>Waitmsecs <input type="text" name="name"/> </div>
+      </Draggable>
     );
   }
 }
 
 class BranchDistSensor extends OpComponent {
-  constructor(props,id) {
-    super(props,id);
-    this.dist_cm = 0;
-    this.name = "BranchDistSensor";
+  constructor(props) {
+    super(props);
+    this.state = {
+      dist_cm: 0,
+    };
   }
   render() {
     return (
-      <div>BranchDistSensor <input type="text" name="name"/> </div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div>BranchDistSensor <input type="text" name="name"/> </div>
+      </Draggable>
     );
   }
 }
 
 class Stop extends OpComponent {
-  constructor(props,id) {
-    super(props,id);
-    this.name = "Stop";
+  constructor(props) {
+    super(props);
   }
   render() {
     return (
-      <div>Stop</div>
+      <Draggable onDrag={() => { this.props.handleDrag(this); }}>
+        <div>Stop</div>
+      </Draggable>
     );
   }
-
 }
 
 class Graph {
   constructor() {
     this.edges = [[],[],[]];
-    this.nodes = [ new Start(0) , new End(1) , new RightWheel(2) ];
+    this.nodes = [ "Start" , "End" , "RightWheel" ];
     this.nodes_num = this.edges.length;
   }
 
   add_component(component) {
     this.edges.push( [] );
-    component.id = this.nodes_num;
     this.nodes.push( component );
     this.nodes_num++;
     return this;
@@ -160,26 +176,39 @@ class EditWindow extends React.Component {
     return (
       <div>
       Editor Window
-      { this.props.graph.nodes.map((node,index) => {
-        switch (node.name) {
+      { this.props.graph.nodes.map((node_name,index) => {
+        switch (node_name) {
           case "Start":
-            return (<Start key={index}/>);
+            return (<Start id={index} name={node_name} handleDrag={this.props.handleDrag}/>);
           case "End":
-            return (<End key={index}/>);
+            return (<End id={index} name={node_name} handleDrag={this.props.handleDrag}/>);
           case "RightWheel":
-            return (<RightWheel key={index}/>)
+            return (<RightWheel id={index} name={node_name} handleDrag={this.props.handleDrag}/>)
           case "LeftWheel":
-            return (<LeftWheel key={index}/>)
+            return (<LeftWheel id={index} name={node_name} handleDrag={this.props.handleDrag}/>)
           case "Waitmsecs":
-            return (<Waitmsecs key={index}/>)
+            return (<Waitmsecs id={index} name={node_name} handleDrag={this.props.handleDrag}/>)
           case "BranchDistSensor":
-            return (<BranchDistSensor key={index}/>)
+            return (<BranchDistSensor id={index} name={node_name} handleDrag={this.props.handleDrag}/>)
           case "Stop":
-            return (<Stop key={index}/>)
+            return (<Stop id={index} name={node_name} handleDrag={this.handleDrag}/>)
           default:
             return (<div>Error</div>);
         }
       }) }
+      <svg width="500" height="500">
+      {
+        this.props.graph.edges.map((nodes,node_from) => {
+          return (
+            nodes.map((node_to) => {
+              console.log("edge:" + node_from+ " " + node_to);
+              return (
+                <line x1={this.props.positions[node_from][0]} y1={this.props.positions[node_from][1]} x2={this.props.positions[node_to][0]} y2={this.props.positions[node_to][1]} stroke="black"/>
+              );
+            }));
+        })
+      }
+      </svg>
       <button onClick={this.props.serialize}>serialize</button>
       <button onClick={this.props.run}>run</button>
       <button onClick={this.props.stop}>stop</button>
@@ -195,43 +224,41 @@ class App extends React.Component {
     super(props);
     this.state = {
       graph: new Graph(),
+      positions: [[0,0],[100,100],[200,200]],
       from: "",
       to: "",
       code: "",
     };
-    this.add_rightwheel = this.add_rightwheel.bind(this);
-    this.add_leftwheel = this.add_leftwheel.bind(this);
-    this.add_waitmsecs = this.add_waitmsecs.bind(this);
-    this.add_branchdistsensor = this.add_branchdistsensor.bind(this);
-    this.add_stop = this.add_stop.bind(this);
+
+    this.add_component = this.add_component.bind(this);
     this.add_edge = this.add_edge.bind(this);
     this.handleonChange = this.handleonChange.bind(this);
     this.serialize = this.serialize.bind(this);
+    this.handleDrag = this.handleDrag.bind(this);
   }
 
-  add_rightwheel() {
-    this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component(new RightWheel()),
-    }));
+  handleDrag(node) {
+    let rect = ReactDOM.findDOMNode(node).getBoundingClientRect();
+    console.log(node.props.name);
+    console.log(rect.x);
+    let id = parseInt( node.props.id , 10 );
+    const positions = this.state.positions.slice();
+    console.log("ID:"+id);
+    console.log("position:"+positions[id]);
+    positions[id][0] = rect.x;
+    positions[id][1] = rect.y;
+
+    this.setState({
+      positions: positions
+    });
   }
-  add_leftwheel() {
+
+  add_component(compname) {
+    const positions = this.state.positions.slice();
+    positions.push([0,0]);
     this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component(new LeftWheel()),
-    }));
-  }
-  add_waitmsecs() {
-    this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component(new Waitmsecs()),
-    }));
-  }
-  add_branchdistsensor() {
-    this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component(new BranchDistSensor()),
-    }));
-  }
-  add_stop() {
-    this.setState((prevState, props) => ({
-      graph: this.state.graph.add_component(new Stop()),
+      graph: this.state.graph.add_component("compname"),
+      positions: positions,
     }));
   }
 
@@ -268,8 +295,11 @@ class App extends React.Component {
   }
 
   add_edge() {
+    console.log(this.state.positions);
+    console.log(this.state.graph.edges);
     let from_id = parseInt(this.state.from,10);
     let to_id = parseInt(this.state.to,10);
+
     this.setState((prevState, props) => ({
       graph: this.state.graph.add_edge(from_id,to_id),
     }));
@@ -283,11 +313,11 @@ class App extends React.Component {
           <div className="NodeButton">
             Node 
             <div>
-              <button onClick={this.add_rightwheel}>RightWheel</button>
-              <button onClick={this.add_leftwheel}>LeftWheel</button>
-              <button onClick={this.add_waitmsecs}>Waitmsecs</button>
-              <button onClick={this.add_branchdistsensor}>BranchDistSensor</button>
-              <button onClick={this.add_stop}>Stop</button>
+              <button onClick={() => { this.add_component("RightWheel"); }}>RightWheel</button>
+              <button onClick={() => { this.add_component("LeftWheel"); }}>LeftWheel</button>
+              <button onClick={() => { this.add_component("Waitmsecs"); }}>Waitmsecs</button>
+              <button onClick={() => { this.add_component("BranchDistSensor"); }}>BranchDistSensor</button>
+              <button onClick={() => { this.add_component("Stop"); }}>Stop</button>
             </div>
           </div>
           <div className="EdgeForm">
@@ -298,7 +328,7 @@ class App extends React.Component {
               <button type="submit" onClick={this.add_edge}>add edge</button>
             </div>
           </div>
-          <EditWindow graph={this.state.graph} serialize={this.serialize} code={this.state.code}/>
+          <EditWindow graph={this.state.graph} serialize={this.serialize} code={this.state.code} handleDrag={this.handleDrag} positions={this.state.positions}/>
         </div>
       </div>
     );
