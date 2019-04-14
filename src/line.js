@@ -14,6 +14,12 @@ export default class Line extends React.Component {
     };
 
   }
+  set1(x,y) {
+    this.setState({
+      x1:x,
+      y1:y,
+    });
+  }
 
   set2(x,y) {
     this.setState({
