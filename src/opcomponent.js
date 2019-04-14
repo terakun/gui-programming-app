@@ -16,27 +16,50 @@ export class Start extends OpComponent {
     super(props);
   }
   render() {
+    const style = {
+      lineHeight: "32px",
+      width: 64,
+      height: 32,
+      borderRadius: 4,
+      border: "none",
+      padding: "0 16px",
+      color: "#fff",
+      background: "#639"
+    };
     return (
       <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div style> START </div>
+        <div className="Start" style={style}> START </div>
       </Draggable>
     );
   }
 }
+
 export class End extends OpComponent {
   constructor(props){
     super(props);
     this.name = "End";
   }
   render() {
+    const style = {
+      lineHeight: "32px",
+      width: 64,
+      height: 32,
+      borderRadius: 4,
+      border: "none",
+      padding: "0 16px",
+      color: "#fff",
+      background: "#639"
+    };
+
     return (
       <Draggable onDrag={() => { this.props.handleDrag(this); }}>
-        <div> END </div>
+        <div style={style}> END </div>
       </Draggable>
     );
   }
 
 }
+
 export class RightWheel extends OpComponent {
   constructor(props) {
     super(props);
