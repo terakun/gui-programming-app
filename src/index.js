@@ -31,18 +31,22 @@ class Graph {
     let node = this.start_node;
     let stack = [node];
     let visited = new Array(this.nodes_num).fill( false );
-    console.log( visited.length );
-    console.log("dfs");
+
     while( stack.length > 0 ) {
       let node = stack.pop();
       visited[ node ] = true;
       console.log( this.nodes[node] );
-      if( node !== this.end_node && this.edges[node].length === 0 ) {
-        return false;
+      if( node !== this.end_node ){
+        if(( this.nodes[ node ] === "BranchDistSensor" && this.edges[ node ].length < 2 )  ||
+           ( this.nodes[ node ] !== "BranchDistSensor" && this.edges[ node ].length === 0 ) ){
+          return false;
+        }
       }
+
       for(let next_node of this.edges[ node ]) {
         if( !visited[ next_node ] ) stack.push( next_node );
       }
+
     }
     return true;
   }
@@ -110,6 +114,52 @@ class App extends React.Component {
     }
   }
 
+  renderOpComponents() {
+    return this.state.graph.nodes.map((node_name, index) => {
+      switch (node_name) {
+        case "Start":
+          return (<Start key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+        case "End":
+          return (<End key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+        case "Wheel":
+          return (<Wheel key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+        case "Waitmsecs":
+          return (<Waitmsecs key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+        case "BranchDistSensor":
+          return (<BranchDistSensor key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+        case "Stop":
+          return (<Stop key={index} number={index} funcs={this.funcs} handleDrag={this.handleDrag} />);
+        default:
+          return (<div>Error</div>);
+      }
+    });
+  }
+
+  renderDebugWindow() {
+    const mouseX = this.state.mouseX;
+    const mouseY = this.state.mouseY;
+    const isMouseDown = this.state.isMouseDown.toString();
+ 
+    return (
+      <div>
+        Debug Information
+          <div>{mouseX} {mouseY} {isMouseDown}</div>
+        <div className="NodesInfo">
+          Nodes Information
+          <ol start="0">
+            {this.state.graph.nodes.map((node, index) => <li key={index}>{node}</li>)}
+          </ol>
+        </div>
+        <div className="EdgesInfo">
+          Edges Information
+          <ol start="0">
+            {this.state.graph.edges.map((edges, index) => <li key={index}>{edges}</li>)}
+          </ol>
+        </div>
+      </div>
+    );
+  }
+
   runProgram() {
     if( !this.state.graph.checkConnectStartToEnd() ){
       console.log("disconnected");
@@ -128,7 +178,6 @@ class App extends React.Component {
     };
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
-    const isMouseDown = this.state.isMouseDown.toString();
  
     return (
       <div>
@@ -141,30 +190,10 @@ class App extends React.Component {
           </div>
 
           <div>
-            {
-              this.state.graph.nodes.map((node_name, index) => {
-                switch (node_name) {
-                  case "Start":
-                    return  ( <Start key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} /> );
-                  case "End":
-                    return ( <End key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} /> );
-                  case "Wheel":
-                    return ( <Wheel key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} /> );
-                  case "Waitmsecs":
-                    return ( <Waitmsecs key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} /> );
-                  case "BranchDistSensor":
-                    return ( <BranchDistSensor key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} /> );
-                  case "Stop":
-                    return ( <Stop key={index} number={index} funcs={this.funcs} handleDrag={this.handleDrag} /> );
-                  default:
-                    return (<div>Error</div>);
-                }
-              })
-            }
-
+            { this.renderOpComponents() }
             <div>
               {
-                // 2つの部品をつなぐときに描画する線の処理
+                // 2つの部品をマウスドラッグでつなぐときに描画する線の処理( 後で書く )
                 (() => {
                   if (this.state.isMouseDown) {
                     return (
@@ -198,26 +227,10 @@ class App extends React.Component {
         <button onClick={this.runProgram.bind(this)}>実行</button>
         <button>やめる</button>
 
-        <div>
-          Debug Information
-        <div>{mouseX} {mouseY} {isMouseDown}</div>
-          <div className="NodesInfo">
-            Nodes Information
-          <ol start="0">
-              {this.state.graph.nodes.map((node, index) => <li key={index}>{node}</li>)}
-            </ol>
-          </div>
-          <div className="EdgesInfo">
-            Edges Information
-          <ol start="0">
-              {this.state.graph.edges.map((edges, index) => <li key={index}>{edges}</li>)}
-            </ol>
-          </div>
-        </div>
+        {this.renderDebugWindow()} 
       </div>
     );
   }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
-
