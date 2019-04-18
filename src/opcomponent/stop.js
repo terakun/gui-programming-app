@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 
 export default class Stop extends React.Component {
@@ -59,9 +58,6 @@ export default class Stop extends React.Component {
       position: "absolute",
       bottom: -1,
     };
-
-    let dom = ReactDOM.findDOMNode(this);
-    console.log(dom);
 
     return (
       <Draggable cancel="strong" onDrag={() => { }}>

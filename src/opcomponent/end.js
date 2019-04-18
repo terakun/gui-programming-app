@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import Draggable from 'react-draggable';
 
 export default class End extends React.Component {
   constructor(props){

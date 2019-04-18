@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 
 export default class BranchDistSensor extends React.Component {
@@ -34,7 +33,7 @@ export default class BranchDistSensor extends React.Component {
 
     let topstyle = {
       marginLeft: "auto",
-      width:200,
+      width:100,
       height:20,
       borderRadius: 4,
       border: "none",
@@ -52,7 +51,7 @@ export default class BranchDistSensor extends React.Component {
       top: "35%",
     };
 
-    let bottom1style = {
+    let bottomleftstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -65,7 +64,7 @@ export default class BranchDistSensor extends React.Component {
       margin:"auto",
     };
 
-    let bottom2style = {
+    let bottomrightstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -81,17 +80,20 @@ export default class BranchDistSensor extends React.Component {
     return (
       <Draggable cancel="strong" >
         <div style={boxstyle} className="box">
+          <strong className="no-cursor">
+            <div style={topstyle} onMouseUp={() => { this.state.setCompTo(this); }}></div>
+          </strong>
 
-          <div>
-            距離センサーが<input text style={{width:40,}}/>cm
+          <div style={textstyle}>
+            距離センサーが<input text style={{ width: 40, }} />cm
           </div>
 
           <strong className="no-cursor">
-          <div style={bottom1style} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}>以上</div>
+            <div style={bottomleftstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以上</div>
           </strong>
 
           <strong className="no-cursor">
-          <div style={bottom2style} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}>以下</div>
+            <div style={bottomrightstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以下</div>
           </strong>
 
         </div>
