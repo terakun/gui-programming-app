@@ -11,6 +11,7 @@ import BranchDistSensor from './opcomponent/branchdistsensor'
 
 import Line from './line'
 
+// プログラムを表現するクラス
 class Graph {
   constructor() {
     this.edges = [[],[]];
@@ -64,6 +65,7 @@ class App extends React.Component {
     this.setState({ isMouseDown: true });
   }
 
+  // ２つの部品をつなぐときに使う関数
   setCompFrom(comp) {
     console.log("From:"+comp.state.number);
     this.setState({ clickFrom: comp.state.number , isMouseDown: true });
@@ -94,6 +96,7 @@ class App extends React.Component {
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
     const isMouseDown = this.state.isMouseDown.toString();
+ 
     return (
       <div>
       <div onMouseMove={this._onMouseMove.bind(this)} onMouseUp={ ()=> {this.setState({ isMouseDown: false })} } style={style}>
@@ -151,8 +154,8 @@ class App extends React.Component {
               this.state.graph.edges.map((nodes,node_from) => {
                 return (
                   nodes.map((node_to) => {
-                    var [x1,y1] = [this.state.positions[node_from][0],this.state.positions[node_from][1]];
-                    var [x2,y2] = [this.state.positions[node_to][0],this.state.positions[node_to][1]];
+                    let [x1,y1] = [this.state.positions[node_from][0],this.state.positions[node_from][1]];
+                    let [x2,y2] = [this.state.positions[node_to][0],this.state.positions[node_to][1]];
                     console.log("edge:" + node_from+ " " + node_to);
                     return (
                       <Line x1={x1} y1={y1} x2={x2} y2={y2} thickness={1} color="black"/>
