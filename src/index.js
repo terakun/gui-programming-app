@@ -17,13 +17,20 @@ class Graph {
     this.start_node = 0;
     this.end_node = 1;
     this.nodes = [ "Start" , "End" ];
+    this.attributes = [{},{}];
     this.nodes_num = this.edges.length;
   }
 
   addComponent(component) {
     this.edges.push( [] );
     this.nodes.push( component );
+    this.attributes.push( {} );
     this.nodes_num++;
+    return this;
+  }
+
+  setAttribute(id,attr) {
+    this.attributes[id] = attr;
     return this;
   }
 
@@ -75,6 +82,7 @@ class App extends React.Component {
     this.funcs = {
       setCompFrom: this.setCompFrom.bind(this),
       setCompTo: this.setCompTo.bind(this),
+      setOpComponentAttribute: this.setOpComponentAttribute.bind(this),
     };
   }
 
@@ -106,12 +114,31 @@ class App extends React.Component {
         isMouseDown: false ,
       });
     }else{
-      this.setState({
-        clickTo: comp.state.number ,
-        isMouseDown: false ,
-        graph: this.state.graph.addEdge(this.state.clickFrom , comp.state.number),
-      });
+      if( (this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length === 0)||
+        (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length <= 1)) {
+        this.setState({
+          clickTo: comp.state.number,
+          isMouseDown: false,
+          graph: this.state.graph.addEdge(this.state.clickFrom, comp.state.number),
+        });
+      }
     }
+  }
+
+  runProgram() {
+    if( !this.state.graph.checkConnectStartToEnd() ){
+      console.log("disconnected");
+      return false;
+    }
+    console.log("connected");
+    return true;
+  }
+
+  setOpComponentAttribute(id,attr) {
+    let new_graph = this.state.graph.setAttribute(id,attr);
+    this.setState({
+      graph: new_graph,
+    });
   }
 
   renderOpComponents() {
@@ -135,6 +162,20 @@ class App extends React.Component {
     });
   }
 
+  renderEdges() {
+    // 接続された部品間の線を描画する際の処理
+    return this.state.graph.edges.map((nodes, node_from) => {
+      return (
+        nodes.map((node_to, index) => {
+          let [x1, y1] = [this.state.positions[node_from][0], this.state.positions[node_from][1]];
+          let [x2, y2] = [this.state.positions[node_to][0], this.state.positions[node_to][1]];
+          return (
+            <Line keys={this.nodes_num * node_from + index} x1={x1} y1={y1} x2={x2} y2={y2} thickness={1} color="black" />
+          );
+        }));
+    });
+  }
+
   renderDebugWindow() {
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
@@ -143,11 +184,11 @@ class App extends React.Component {
     return (
       <div>
         Debug Information
-          <div>{mouseX} {mouseY} {isMouseDown}</div>
+        <div>{mouseX} {mouseY} {isMouseDown}</div>
         <div className="NodesInfo">
           Nodes Information
           <ol start="0">
-            {this.state.graph.nodes.map((node, index) => <li key={index}>{node}</li>)}
+            {this.state.graph.nodes.map((node, index) => <li key={index}>{node}:{JSON.stringify(this.state.graph.attributes[index],null,'\t')}</li>)}
           </ol>
         </div>
         <div className="EdgesInfo">
@@ -158,15 +199,6 @@ class App extends React.Component {
         </div>
       </div>
     );
-  }
-
-  runProgram() {
-    if( !this.state.graph.checkConnectStartToEnd() ){
-      console.log("disconnected");
-      return false;
-    }
-    console.log("connected");
-    return true;
   }
 
   render() {
@@ -182,6 +214,7 @@ class App extends React.Component {
     return (
       <div>
         <div onMouseMove={this._onMouseMove.bind(this)} onMouseUp={() => { this.setState({ isMouseDown: false }) }} style={style}>
+
           <div>
             <button onClick={() => { this.addComponent("Wheel"); }}>Wheel</button>
             <button onClick={() => { this.addComponent("Waitmsecs"); }}>Waitmsecs</button>
@@ -191,42 +224,20 @@ class App extends React.Component {
 
           <div>
             { this.renderOpComponents() }
+
             <div>
-              {
-                // 2つの部品をマウスドラッグでつなぐときに描画する線の処理( 後で書く )
-                (() => {
+                {(() => {
                   if (this.state.isMouseDown) {
-                    return (
-                      <Line ref='line' x1={100} y1={100} x2={mouseX} y2={mouseY} thickness={1} color="black" />
-                    );
+                    return ( <Line ref='line' x1={100} y1={100} x2={mouseX} y2={mouseY} thickness={1} color="black" /> );
                   }
-                })()
-              }
+                })()}
             </div>
-            <div>
-              {
-                // 接続された部品間の線を描画する際の処理
-                this.state.graph.edges.map((nodes, node_from) => {
-                  return (
-                    nodes.map((node_to,index) => {
-                      let [x1, y1] = [this.state.positions[node_from][0], this.state.positions[node_from][1]];
-                      let [x2, y2] = [this.state.positions[node_to][0], this.state.positions[node_to][1]];
-                      return (
-                        <Line keys={this.nodes_num*node_from+index} x1={x1} y1={y1} x2={x2} y2={y2} thickness={1} color="black" />
-                      );
-                    }));
-                })
-              }
-            </div>
-          </div>
-          <div>
+            <div> {this.renderEdges()} </div>
           </div>
         </div>
-
         <button onClick={this.runProgram.bind(this)}>実行</button>
         <button>やめる</button>
-
-        {this.renderDebugWindow()} 
+        { this.renderDebugWindow() } 
       </div>
     );
   }

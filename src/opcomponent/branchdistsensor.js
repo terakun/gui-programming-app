@@ -8,14 +8,20 @@ export default class BranchDistSensor extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
-      len: 0,
+      dist: 0,
     };
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: this.state.dist });
+  }
+
+  setDist(e) {
+    this.setState({ dist: e.target.value, });
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: e.target.value });
   }
 
   render() {
     let boxstyle = {
       width: 100,
-      height: 70,
+      height: 100,
       left: "auto",
       top: "auto",
       border: "solid",
@@ -88,7 +94,7 @@ export default class BranchDistSensor extends React.Component {
           <div style={textstyle}>
             距離センサーが
             <strong className="no-cursor">
-              <input style={{ width: 40 }} value={this.state.len} onChange={(e) => this.setState({len: e.target.value})} />
+              <input style={{ width: 40 }} value={this.state.dist} onChange={this.setDist.bind(this)} />
             </strong>
             cm
           </div>

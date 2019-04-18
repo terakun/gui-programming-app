@@ -10,7 +10,12 @@ export default class Waitmsecs extends React.Component {
       setCompTo: props.funcs.setCompTo,
       time: 0,
     };
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ time: this.state.time });
+  }
 
+  setTime(e) {
+    this.setState({ dist: e.target.value, });
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ time: e.target.value });
   }
 
   render() {
@@ -75,7 +80,7 @@ export default class Waitmsecs extends React.Component {
           </strong>
             <div style={textstyle}>
               <strong className="no-cursor">
-                <input style={{width:40,}} onChange={(e) => this.setState({time: e.target.value})}/>
+                <input style={{width:40,}} onChange={this.setTime.bind(this)}/>
               </strong>
               ms 待つ
             </div>
