@@ -85,7 +85,7 @@ export default class BranchDistSensor extends React.Component {
           </strong>
 
           <div style={textstyle}>
-            距離センサーが<input text style={{ width: 40, }} />cm
+            距離センサーが<input style={{ width: 40 }} />cm
           </div>
 
           <strong className="no-cursor">

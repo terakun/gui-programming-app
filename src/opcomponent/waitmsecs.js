@@ -73,7 +73,7 @@ export default class Waitmsecs extends React.Component {
           <div style={topstyle} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}></div>
           </strong>
             <div style={textstyle}>
-              <input text style={{width:40,}}/>ms 待つ
+              <input style={{width:40,}}/>ms 待つ
             </div>
           <strong className="no-cursor">
           <div style={bottomstyle} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}></div>

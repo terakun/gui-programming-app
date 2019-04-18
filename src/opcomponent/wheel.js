@@ -74,18 +74,18 @@ export default class Wheel extends React.Component {
           <div style={topstyle} onMouseUp={() => {this.state.setCompTo(this);}}></div>
           </strong>
           <div style={textstyle}>
-            <select name="direction">
-            <option value="1" selected>左</option>
+            <select name="direction" defaultValue="1">
+            <option value="1">左</option>
             <option value="2">右</option>
             </select>
             タイヤを
-            <select name="direction">
-            <option value="1" selected>前</option>
+            <select name="direction" defaultValue="1">
+            <option value="1">前</option>
             <option value="2">後</option>
             </select>
             に
-            <select name="power">
-            <option value="1" selected>強</option>
+            <select name="power" defaultValue="1">
+            <option value="1">強</option>
             <option value="2">中</option>
             <option value="3">弱</option>
             <option value="4">止</option>
