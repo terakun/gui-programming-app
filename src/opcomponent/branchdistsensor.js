@@ -8,6 +8,7 @@ export default class BranchDistSensor extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
+      len: 0,
     };
   }
 
@@ -85,8 +86,13 @@ export default class BranchDistSensor extends React.Component {
           </strong>
 
           <div style={textstyle}>
-            距離センサーが<input style={{ width: 40 }} />cm
+            距離センサーが
+            <strong className="no-cursor">
+              <input style={{ width: 40 }} value={this.state.len} onChange={(e) => this.setState({len: e.target.value})} />
+            </strong>
+            cm
           </div>
+
 
           <strong className="no-cursor">
             <div style={bottomleftstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以上</div>

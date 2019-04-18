@@ -208,12 +208,11 @@ class App extends React.Component {
                 // 接続された部品間の線を描画する際の処理
                 this.state.graph.edges.map((nodes, node_from) => {
                   return (
-                    nodes.map((node_to) => {
+                    nodes.map((node_to,index) => {
                       let [x1, y1] = [this.state.positions[node_from][0], this.state.positions[node_from][1]];
                       let [x2, y2] = [this.state.positions[node_to][0], this.state.positions[node_to][1]];
-                      console.log("edge:" + node_from + " " + node_to);
                       return (
-                        <Line x1={x1} y1={y1} x2={x2} y2={y2} thickness={1} color="black" />
+                        <Line keys={this.nodes_num*node_from+index} x1={x1} y1={y1} x2={x2} y2={y2} thickness={1} color="black" />
                       );
                     }));
                 })

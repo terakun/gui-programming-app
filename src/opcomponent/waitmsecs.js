@@ -8,6 +8,7 @@ export default class Waitmsecs extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
+      time: 0,
     };
 
   }
@@ -73,7 +74,10 @@ export default class Waitmsecs extends React.Component {
           <div style={topstyle} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}></div>
           </strong>
             <div style={textstyle}>
-              <input style={{width:40,}}/>ms 待つ
+              <strong className="no-cursor">
+                <input style={{width:40,}} onChange={(e) => this.setState({time: e.target.value})}/>
+              </strong>
+              ms 待つ
             </div>
           <strong className="no-cursor">
           <div style={bottomstyle} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}></div>

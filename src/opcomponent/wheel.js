@@ -8,6 +8,9 @@ export default class Wheel extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
+      wheel: 0,
+      direction: 0,
+      power: 0,
     };
 
   }
@@ -74,17 +77,17 @@ export default class Wheel extends React.Component {
           <div style={topstyle} onMouseUp={() => {this.state.setCompTo(this);}}></div>
           </strong>
           <div style={textstyle}>
-            <select name="direction" defaultValue="1">
+            <select name="wheel" defaultValue="1" onChange={ e => this.setState({wheel: e.target.value})}>
             <option value="1">左</option>
             <option value="2">右</option>
             </select>
             タイヤを
-            <select name="direction" defaultValue="1">
+            <select name="direction" defaultValue="1" onChange={ e => this.setState({direction: e.target.value})}>
             <option value="1">前</option>
             <option value="2">後</option>
             </select>
             に
-            <select name="power" defaultValue="1">
+            <select name="power" defaultValue="1" onChange={ e => this.setState({power: e.target.value})}>
             <option value="1">強</option>
             <option value="2">中</option>
             <option value="3">弱</option>
