@@ -115,10 +115,10 @@ export default class Wheel extends React.Component {
             </select>
             に
             <select name="power" defaultValue={0} onChange={this.setPower.bind(this)}>
-            <option value={0}>強</option>
-            <option value={1}>中</option>
-            <option value={2}>弱</option>
-            <option value={3}>止</option>
+            <option value={3}>強</option>
+            <option value={2}>中</option>
+            <option value={1}>弱</option>
+            <option value={0}>止</option>
             </select>
           </div>
           <strong className="no-cursor">

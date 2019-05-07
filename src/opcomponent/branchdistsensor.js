@@ -99,7 +99,6 @@ export default class BranchDistSensor extends React.Component {
             cm
           </div>
 
-
           <strong className="no-cursor">
             <div style={bottomleftstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以上</div>
           </strong>

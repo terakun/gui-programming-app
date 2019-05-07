@@ -9,65 +9,10 @@ import Waitmsecs from './opcomponent/waitmsecs'
 import BranchDistSensor from './opcomponent/branchdistsensor'
 
 import Line from './line'
-
-// プログラムを表現するクラス
-class Graph {
-  constructor() {
-    this.edges = [[],[]];
-    this.start_node = 0;
-    this.end_node = 1;
-    this.nodes = [ "Start" , "End" ];
-    this.attributes = [{},{}];
-    this.nodes_num = this.edges.length;
-  }
-
-  addComponent(component) {
-    this.edges.push( [] );
-    this.nodes.push( component );
-    this.attributes.push( {} );
-    this.nodes_num++;
-    return this;
-  }
-
-  setAttribute(id,attr) {
-    this.attributes[id] = attr;
-    return this;
-  }
-
-  checkConnectStartToEnd() {
-    let node = this.start_node;
-    let stack = [node];
-    let visited = new Array(this.nodes_num).fill( false );
-
-    while( stack.length > 0 ) {
-      let node = stack.pop();
-      visited[ node ] = true;
-      console.log( this.nodes[node] );
-      if( node !== this.end_node ){
-        if(( this.nodes[ node ] === "BranchDistSensor" && this.edges[ node ].length < 2 )  ||
-           ( this.nodes[ node ] !== "BranchDistSensor" && this.edges[ node ].length === 0 ) ){
-          return false;
-        }
-      }
-
-      for(let next_node of this.edges[ node ]) {
-        if( !visited[ next_node ] ) stack.push( next_node );
-      }
-
-    }
-    return true;
-  }
-
-  addEdge(from,to) {
-    console.log(from);
-    console.log(to);
-    this.edges[from].push(to);
-    return this;
-  }
-}
+import Graph from './graph'
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       mouseX: 0,
@@ -76,8 +21,29 @@ class App extends React.Component {
       clickTo: 0,
       isMouseDown: false,
       graph: new Graph(),
-      positions: [[0,0],[0,0]],
+      positions: [[0, 0], [0, 0]],
+      sensordata: 0,
+      currentnode: 0,
+      timercount: 0,
+      carstate: {
+        left: {
+          power: 0,
+          direction: 0,
+        },
+        right: {
+          power: 0,
+          direction: 0,
+        }
+      }
     };
+
+    this.connection = new WebSocket("ws:127.0.0.1:8000");
+    this.connection.onopen = this.onOpen.bind(this);
+    this.connection.onmessage = this.onMessage.bind(this);
+
+    this.runProgram = this.runProgram.bind(this);
+    this.stepProgram = this.stepProgram.bind(this);
+    this.stopProgram = this.stopProgram.bind(this);
 
     this.funcs = {
       setCompFrom: this.setCompFrom.bind(this),
@@ -86,9 +52,19 @@ class App extends React.Component {
     };
   }
 
+  onOpen(event) {
+    console.log("Connect successful!");
+  }
+
+  onMessage(event) {
+    this.setState({
+      sensordata: event.data,
+    })
+  }
+
   addComponent(node_name) {
     const new_positions = Object.assign([], this.state.positions);
-    new_positions.push([0,0]);
+    new_positions.push([0, 0]);
     this.setState({
       positions: new_positions,
       graph: this.state.graph.addComponent(node_name),
@@ -97,24 +73,25 @@ class App extends React.Component {
 
   _onMouseMove(e) {
     this.setState({ mouseX: e.pageX, mouseY: e.pageY });
-    if(this.state.isMouseDown) this.refs.line.set2(this.state.mouseX,this.state.mouseY);
+    if (this.state.isMouseDown) this.refs.line.set2(this.state.mouseX, this.state.mouseY);
   }
+
   _onMouseClick(e) {
     this.setState({ isMouseDown: true });
   }
 
   setCompFrom(comp) {
-    console.log("From:"+comp.state.number);
-    this.setState({ clickFrom: comp.state.number , isMouseDown: true });
+    console.log("From:" + comp.state.number);
+    this.setState({ clickFrom: comp.state.number, isMouseDown: true });
   }
   setCompTo(comp) {
-    console.log("To:"+comp.state.number);
-    if( comp.state.number === this.state.clickFrom ){
+    console.log("To:" + comp.state.number);
+    if (comp.state.number === this.state.clickFrom) {
       this.setState({
-        isMouseDown: false ,
+        isMouseDown: false,
       });
-    }else{
-      if( (this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length === 0)||
+    } else {
+      if ((this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length === 0) ||
         (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length <= 1)) {
         this.setState({
           clickTo: comp.state.number,
@@ -126,16 +103,103 @@ class App extends React.Component {
   }
 
   runProgram() {
-    if( !this.state.graph.checkConnectStartToEnd() ){
+    if (!this.state.graph.checkConnectStartToEnd()) {
       console.log("disconnected");
       return false;
     }
+    this.interval = setInterval(this.stepProgram, 10);
     console.log("connected");
     return true;
   }
 
-  setOpComponentAttribute(id,attr) {
-    let new_graph = this.state.graph.setAttribute(id,attr);
+  stepProgram() {
+    const currentnode = this.state.currentnode;
+    const nextedge = this.state.graph.edges[currentnode];
+    let nextnode = null;
+    const attr = this.state.graph.attributes[currentnode];
+    let carstate = this.state.carstate;
+
+    switch (this.state.graph.nodes[currentnode]) {
+      case "Start":
+        nextnode = nextedge[0];
+        break;
+      case "End":
+        clearInterval(this.interval);
+        nextnode = 0;
+        console.log("Program Terminated");
+        break;
+      case "Wheel":
+        if( attr.wheel === 0 ) { // 左
+          carstate.left = {
+            power: attr.power,
+            direction: attr.direction,
+          };
+        } else {
+          carstate.right = {
+            power: attr.power,
+            direction: attr.direction,
+          };
+        }
+        nextnode = nextedge[0];
+        break;
+      case "Waitmsecs":
+        if( this.state.timercount*10 > attr.time ) {
+          nextnode = nextedge[0];
+          this.setState({
+            timercount : 0,
+          });
+        } else {
+          nextnode = currentnode;
+          this.setState({
+            timercount : this.state.timercount + 1,
+          });
+        }
+        break;
+      case "BranchDistSensor":
+        let dist = attr.dist;
+        if( dist < this.state.sensordata ) {
+          nextnode = nextedge[0];
+        } else {
+          nextnode = nextedge[1];
+        }
+        break;
+      case "Stop":
+        carstate.left = {
+          power: 0,
+          direction: 0,
+        };
+        carstate.right = {
+          power: 0,
+          direction: 0,
+        };
+        break;
+      default:
+    }
+    this.setState({
+      currentnode: nextnode,
+      carstate: carstate,
+    });
+    let instr = this.encodeInstr(carstate);
+    console.log(instr);
+    this.connection.send(instr);
+  }
+
+  encodeInstr(carstate) {
+    let leftwheel = carstate.left;
+    console.log(leftwheel);
+    let rightwheel = carstate.right;
+    console.log(rightwheel);
+    let instr = leftwheel.power.toString() + leftwheel.direction.toString();
+    instr += rightwheel.power.toString() + rightwheel.direction.toString();
+    return instr;
+  }
+
+  stopProgram() {
+    clearInterval(this.interval);
+  }
+
+  setOpComponentAttribute(id, attr) {
+    let new_graph = this.state.graph.setAttribute(id, attr);
     this.setState({
       graph: new_graph,
     });
@@ -180,15 +244,21 @@ class App extends React.Component {
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
     const isMouseDown = this.state.isMouseDown.toString();
- 
+    const currentnode = this.state.currentnode;
+    const sensordata = this.state.sensordata;
+    const timercount = this.state.timercount;
+
     return (
       <div>
         Debug Information
         <div>{mouseX} {mouseY} {isMouseDown}</div>
+        <div>currentnode: {currentnode}</div>
+        <div>sensordata: {sensordata}</div>
+        <div>timercount: {timercount}</div>
         <div className="NodesInfo">
           Nodes Information
           <ol start="0">
-            {this.state.graph.nodes.map((node, index) => <li key={index}>{node}:{JSON.stringify(this.state.graph.attributes[index],null,'\t')}</li>)}
+            {this.state.graph.nodes.map((node, index) => <li key={index}>{node}:{JSON.stringify(this.state.graph.attributes[index], null, '\t')}</li>)}
           </ol>
         </div>
         <div className="EdgesInfo">
@@ -210,11 +280,10 @@ class App extends React.Component {
     };
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
- 
+
     return (
       <div>
         <div onMouseMove={this._onMouseMove.bind(this)} onMouseUp={() => { this.setState({ isMouseDown: false }) }} style={style}>
-
           <div>
             <button onClick={() => { this.addComponent("Wheel"); }}>Wheel</button>
             <button onClick={() => { this.addComponent("Waitmsecs"); }}>Waitmsecs</button>
@@ -223,21 +292,20 @@ class App extends React.Component {
           </div>
 
           <div>
-            { this.renderOpComponents() }
-
+            {this.renderOpComponents()}
             <div>
-                {(() => {
-                  if (this.state.isMouseDown) {
-                    return ( <Line ref='line' x1={100} y1={100} x2={mouseX} y2={mouseY} thickness={1} color="black" /> );
-                  }
-                })()}
+              {(() => {
+                if (this.state.isMouseDown) {
+                  return (<Line ref='line' x1={100} y1={100} x2={mouseX} y2={mouseY} thickness={1} color="black" />);
+                }
+              })()}
             </div>
             <div> {this.renderEdges()} </div>
           </div>
         </div>
         <button onClick={this.runProgram.bind(this)}>実行</button>
-        <button>やめる</button>
-        { this.renderDebugWindow() } 
+        <button onClick={this.stopProgram.bind(this)}>やめる</button>
+        {this.renderDebugWindow()}
       </div>
     );
   }
