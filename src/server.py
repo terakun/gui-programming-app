@@ -5,9 +5,11 @@ import random
 import time
 import websockets
 import bluetooth
+import sys
 
+bluetooth_id = sys.argv[1]
 sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-sock.connect(("98:D3:81:FD:46:CD", 1))
+sock.connect((bluetooth_id, 1))
 print("connected")
 
 def is_num2(s):
@@ -27,16 +29,15 @@ async def sensor_handler(websocket, path):
     while True:
         data = ""
         string = ""
+        pos = -1
         while True:
             data = sock.recv(4096).decode()
-            if data.find('$') == -1: 
+            pos = data.find('$')
+            if pos == -1: 
                 break
             string += data
-        pos = data.find('$')
         string += data[0:pos]
-        string = data[pos+1:]
         sensordata = string.split(',')
-        print(sensordata)
         if len(sensordata) > 1 and is_num2(sensordata[1]):
             print("distance:",sensordata[1])
             await websocket.send(sensordata[1])

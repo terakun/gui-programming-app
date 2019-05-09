@@ -213,19 +213,6 @@ class App extends React.Component {
       currentnode: nextnode,
       carstate: carstate,
     });
-    let instr = this.encodeInstr(carstate);
-    console.log(instr);
-    //this.connection.send(instr);
-  }
-
-  encodeInstr(carstate) {
-    let leftwheel = carstate.left;
-    console.log(leftwheel);
-    let rightwheel = carstate.right;
-    console.log(rightwheel);
-    let instr = leftwheel.power.toString() + leftwheel.direction.toString();
-    instr += rightwheel.power.toString() + rightwheel.direction.toString();
-    return instr;
   }
 
   stopProgram() {
