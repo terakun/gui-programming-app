@@ -10,12 +10,28 @@ export default class BranchDistSensor extends React.Component {
       setCompTo: props.funcs.setCompTo,
       dist: 0,
     };
+    this.selected_above = false;
+    this.abovedstnode = null;
+    this.belowdstnode = null;
     this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: this.state.dist });
+    this.setCompTo = this.setCompTo.bind(this);
+    props.funcs.addOpObj(this);
   }
 
   setDist(e) {
     this.setState({ dist: e.target.value, });
     this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: e.target.value });
+  }
+
+  setCompTo(id) {
+    if(this.selected_above){
+      this.abovedstnode = id;
+      console.log("above:"+id);
+    } else {
+      this.belowdstnode = id;
+      console.log("below:"+id);
+    }
+    this.selected_above = false;
   }
 
   render() {
@@ -36,6 +52,9 @@ export default class BranchDistSensor extends React.Component {
     if(this.props.x !== undefined){
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;
+    }
+    if(this.props.running){
+      boxstyle.background = "#0f0";
     }
 
     let topstyle = {
@@ -100,11 +119,11 @@ export default class BranchDistSensor extends React.Component {
           </div>
 
           <strong className="no-cursor">
-            <div style={bottomleftstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以上</div>
+            <div style={bottomleftstyle} onMouseDown={() => { this.selected_above = true;this.state.setCompFrom(this); }}>以上</div>
           </strong>
 
           <strong className="no-cursor">
-            <div style={bottomrightstyle} onMouseDown={() => { this.state.setCompFrom(this); }}>以下</div>
+            <div style={bottomrightstyle} onMouseDown={() => { this.selected_above = false;this.state.setCompFrom(this); }}>以下</div>
           </strong>
 
         </div>

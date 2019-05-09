@@ -1,7 +1,7 @@
 // プログラムを表現するクラス
 export default class Graph {
   constructor() {
-    this.edges = [[], []];
+    this.edges = [[],[]];
     this.start_node = 0;
     this.end_node = 1;
     this.nodes = ["Start", "End"];

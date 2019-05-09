@@ -37,6 +37,8 @@ class App extends React.Component {
       }
     };
 
+    this.opobj = [];
+
     this.connection = new WebSocket("ws:127.0.0.1:8000");
     this.connection.onopen = this.onOpen.bind(this);
     this.connection.onmessage = this.onMessage.bind(this);
@@ -49,7 +51,12 @@ class App extends React.Component {
       setCompFrom: this.setCompFrom.bind(this),
       setCompTo: this.setCompTo.bind(this),
       setOpComponentAttribute: this.setOpComponentAttribute.bind(this),
+      addOpObj: this.addOpObj.bind(this),
     };
+  }
+
+  addOpObj(obj){
+    this.opobj.push(obj);
   }
 
   onOpen(event) {
@@ -57,9 +64,7 @@ class App extends React.Component {
   }
 
   onMessage(event) {
-    this.setState({
-      sensordata: event.data,
-    })
+    this.setState({ sensordata: event.data, })
   }
 
   addComponent(node_name) {
@@ -73,6 +78,9 @@ class App extends React.Component {
 
   _onMouseMove(e) {
     this.setState({ mouseX: e.pageX, mouseY: e.pageY });
+
+    let rect = ReactDOM.findDOMNode(this.opobj[0]).getBoundingClientRect();
+    // console.log(rect);
     if (this.state.isMouseDown) this.refs.line.set2(this.state.mouseX, this.state.mouseY);
   }
 
@@ -82,8 +90,12 @@ class App extends React.Component {
 
   setCompFrom(comp) {
     console.log("From:" + comp.state.number);
+    if( this.state.graph.nodes[comp.state.number] === "BranchDistSensor" ) {
+
+    }
     this.setState({ clickFrom: comp.state.number, isMouseDown: true });
   }
+
   setCompTo(comp) {
     console.log("To:" + comp.state.number);
     if (comp.state.number === this.state.clickFrom) {
@@ -93,6 +105,9 @@ class App extends React.Component {
     } else {
       if ((this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length === 0) ||
         (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length <= 1)) {
+        if(this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor") {
+          this.opobj[this.state.clickFrom].setCompTo(comp.state.number);
+        }
         this.setState({
           clickTo: comp.state.number,
           isMouseDown: false,
@@ -157,10 +172,10 @@ class App extends React.Component {
         break;
       case "BranchDistSensor":
         let dist = attr.dist;
-        if( dist < this.state.sensordata ) {
-          nextnode = nextedge[0];
+        if( dist > this.state.sensordata ) {
+          nextnode = this.opobj[currentnode].belowdstnode;
         } else {
-          nextnode = nextedge[1];
+          nextnode = this.opobj[currentnode].abovedstnode;
         }
         break;
       case "Stop":
@@ -207,19 +222,20 @@ class App extends React.Component {
 
   renderOpComponents() {
     return this.state.graph.nodes.map((node_name, index) => {
+      let running = (this.state.currentnode === index);
       switch (node_name) {
         case "Start":
-          return (<Start key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+          return (<Start key={index} number={index} running={running} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
         case "End":
-          return (<End key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+          return (<End key={index} number={index}  running={running} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
         case "Wheel":
-          return (<Wheel key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+          return (<Wheel key={index} number={index}  running={running} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
         case "Waitmsecs":
-          return (<Waitmsecs key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+          return (<Waitmsecs key={index} number={index}  running={running} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
         case "BranchDistSensor":
-          return (<BranchDistSensor key={index} number={index} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
+          return (<BranchDistSensor key={index} number={index}  running={running} funcs={this.funcs} handleDrag={this.props.handleDrag} />);
         case "Stop":
-          return (<Stop key={index} number={index} funcs={this.funcs} handleDrag={this.handleDrag} />);
+          return (<Stop key={index} number={index}  running={running} funcs={this.funcs} handleDrag={this.handleDrag} />);
         default:
           return (<div>Error</div>);
       }
@@ -247,7 +263,8 @@ class App extends React.Component {
     const currentnode = this.state.currentnode;
     const sensordata = this.state.sensordata;
     const timercount = this.state.timercount;
-
+    const opobj = this.opobj;
+    const positions = this.state.positions;
     return (
       <div>
         Debug Information
@@ -255,6 +272,8 @@ class App extends React.Component {
         <div>currentnode: {currentnode}</div>
         <div>sensordata: {sensordata}</div>
         <div>timercount: {timercount}</div>
+        <div>opobj: {opobj.toString()}</div>
+        <div>positions: {positions}</div>
         <div className="NodesInfo">
           Nodes Information
           <ol start="0">
@@ -278,6 +297,10 @@ class App extends React.Component {
       border: "solid",
       padding: "0 16px",
     };
+
+    const selectedcompX = this.state.positions[this.state.clickFrom][0];
+    const selectedcompY = this.state.positions[this.state.clickFrom][1];
+
     const mouseX = this.state.mouseX;
     const mouseY = this.state.mouseY;
 
@@ -296,7 +319,7 @@ class App extends React.Component {
             <div>
               {(() => {
                 if (this.state.isMouseDown) {
-                  return (<Line ref='line' x1={100} y1={100} x2={mouseX} y2={mouseY} thickness={1} color="black" />);
+                  return (<Line ref='line' x1={selectedcompX} y1={selectedcompY} x2={mouseX} y2={mouseY} thickness={1} color="black" />);
                 }
               })()}
             </div>

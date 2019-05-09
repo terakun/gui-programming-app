@@ -8,7 +8,7 @@ export default class End extends React.Component {
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
     };
-
+    props.funcs.addOpObj(this);
   }
 
   render() {
@@ -26,6 +26,9 @@ export default class End extends React.Component {
       borderRadius: 4,
       WebkitUserSelect: "none",
     };
+    if(this.props.running){
+      boxstyle.background = "#0f0";
+    }
 
     if(this.props.x !== undefined){
       boxstyle.left = this.props.x;
@@ -48,8 +51,6 @@ export default class End extends React.Component {
       top:"35%",
     };
 
-
-
     return (
       <div style={boxstyle} className="box">
         <strong className="no-cursor">
@@ -62,4 +63,3 @@ export default class End extends React.Component {
     );
   }
 }
-

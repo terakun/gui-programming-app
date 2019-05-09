@@ -7,9 +7,9 @@ import bluetooth
 
 async def echo(websocket, path):
     async for message in websocket:
-        print(message)
+        print("message:",message)
         sensordata = 100
-        print(sensordata)
+        print("sensordata:",sensordata)
         await websocket.send(str(sensordata))
 
 asyncio.get_event_loop().run_until_complete(

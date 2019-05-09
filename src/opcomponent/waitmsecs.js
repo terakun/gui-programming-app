@@ -33,6 +33,11 @@ export default class Waitmsecs extends React.Component {
       borderRadius: 4,
       WebkitUserSelect: "none",
     };
+    if(this.props.running){
+      boxstyle.background = "#00f";
+    }
+
+
     if(this.props.x !== undefined){
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;

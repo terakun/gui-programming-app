@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 
 export default class Start extends React.Component {
   constructor(props){
@@ -8,10 +9,11 @@ export default class Start extends React.Component {
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
     };
-
+    props.funcs.addOpObj(this);
   }
 
   render() {
+
     let boxstyle = {
       width: 100,
       height: 50,
@@ -30,6 +32,7 @@ export default class Start extends React.Component {
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;
     }
+
     const bottomstyle = {
       width: 100,
       height: 10,
