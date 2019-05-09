@@ -13,6 +13,7 @@ export default class Wheel extends React.Component {
       power: 0,
     };
     this.props.funcs.setOpComponentAttribute(this.state.number,this.getAttribute());
+    props.funcs.addOpObj(this);
   }
 
   getAttribute() {

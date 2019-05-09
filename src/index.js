@@ -64,7 +64,7 @@ class App extends React.Component {
   }
 
   onMessage(event) {
-    this.setState({ sensordata: event.data, })
+    this.setState({ sensordata: parseInt(event.data,10), })
   }
 
   addComponent(node_name) {
@@ -142,17 +142,35 @@ class App extends React.Component {
         clearInterval(this.interval);
         nextnode = 0;
         console.log("Program Terminated");
+        this.connection.send("s");
         break;
       case "Wheel":
-        if( attr.wheel === 0 ) { // 左
+        let wheel = parseInt(attr.wheel,10);
+        let direction = parseInt(attr.direction,10);
+        let power = parseInt(attr.power,10);
+        if( wheel === 0 ) { // 左
+          if( direction === 0){ // 順転
+            let speed = 3+power;
+            this.connection.send("l"+speed);
+          }else{ // 反転
+            let speed = 3-power;
+            this.connection.send("l"+speed);
+          }
           carstate.left = {
-            power: attr.power,
-            direction: attr.direction,
+            power: power,
+            direction: direction,
           };
         } else {
+          if(direction === 0){ // 順転
+            let speed = 3+power;
+            this.connection.send("r"+speed);
+          }else{ // 反転
+            let speed = 3-power;
+            this.connection.send("r"+speed);
+          }
           carstate.right = {
-            power: attr.power,
-            direction: attr.direction,
+            power:power,
+            direction: direction,
           };
         }
         nextnode = nextedge[0];
@@ -171,7 +189,7 @@ class App extends React.Component {
         }
         break;
       case "BranchDistSensor":
-        let dist = attr.dist;
+        let dist = parseInt(attr.dist,10);
         if( dist > this.state.sensordata ) {
           nextnode = this.opobj[currentnode].belowdstnode;
         } else {
@@ -179,6 +197,7 @@ class App extends React.Component {
         }
         break;
       case "Stop":
+        this.connection.send("s");
         carstate.left = {
           power: 0,
           direction: 0,
@@ -196,7 +215,7 @@ class App extends React.Component {
     });
     let instr = this.encodeInstr(carstate);
     console.log(instr);
-    this.connection.send(instr);
+    //this.connection.send(instr);
   }
 
   encodeInstr(carstate) {

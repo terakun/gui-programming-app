@@ -9,7 +9,7 @@ export default class Stop extends React.Component {
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
     };
-
+    props.funcs.addOpObj(this);
   }
 
   render() {

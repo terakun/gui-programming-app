@@ -11,6 +11,7 @@ export default class Waitmsecs extends React.Component {
       time: 0,
     };
     this.props.funcs.setOpComponentAttribute(this.state.number,{ time: this.state.time });
+    props.funcs.addOpObj(this);
   }
 
   setTime(e) {
