@@ -12,18 +12,10 @@ sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 sock.connect((bluetooth_id, 1))
 print("connected")
 
-def is_num2(s):
-    try:
-        float(s)
-    except ValueError:
-        return False
-    else:
-        return True
-
 async def operation_handler(websocket, path):
     async for message in websocket:
         print("operation:",message)
-        sock.send(message)
+        sock.send(message+",")
 
 async def sensor_handler(websocket, path):
     while True:
@@ -37,11 +29,14 @@ async def sensor_handler(websocket, path):
                 break
             string += data
         string += data[0:pos]
+        print("string:",string)
         sensordata = string.split(',')
-        if len(sensordata) > 1 and is_num2(sensordata[1]):
+        if len(sensordata) > 5 and sensordata[2] == "l":
             print("distance:",sensordata[1])
-            await websocket.send(sensordata[1])
-        await asyncio.sleep(0.01)
+            print("left:",sensordata[3])
+            print("right:",sensordata[5])
+            await websocket.send(sensordata[1]+","+sensordata[3]+","+sensordata[5])
+        await asyncio.sleep(0.1)
 
 async def handler(websocket, path):
     consumer_task = asyncio.ensure_future(

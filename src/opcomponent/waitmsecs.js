@@ -38,7 +38,6 @@ export default class Waitmsecs extends React.Component {
       boxstyle.background = "#00f";
     }
 
-
     if(this.props.x !== undefined){
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;
@@ -79,7 +78,7 @@ export default class Waitmsecs extends React.Component {
     };
 
     return (
-      <Draggable cancel="strong" >
+      <Draggable cancel="strong" onStart={() => {this.props.funcs.onStartDrag(this);}} onStop={() => {this.props.funcs.onStopDrag(this);}}>
         <div style={boxstyle} className="box">
           <strong className="no-cursor">
           <div style={topstyle} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}></div>

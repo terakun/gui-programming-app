@@ -103,7 +103,7 @@ export default class Wheel extends React.Component {
     };
 
     return (
-      <Draggable cancel="strong" >
+      <Draggable cancel="strong" onDrag={this.handleDrag}>
         <div style={boxstyle} className="box">
           <strong className="no-cursor">
           <div style={topstyle} onMouseUp={() => {this.state.setCompTo(this);}}></div>

@@ -6,12 +6,14 @@ export default class Line extends React.Component {
     this.state = {
       x1: this.props.x1,
       y1: this.props.y1,
+      id1: this.props.id1,
       x2: this.props.x2,
       y2: this.props.y2,
+      id2: this.props.id2,
       thickness: this.props.thickness,
       color: this.props.color,
     };
-
+    if(this.props.id1!==-1) this.props.addLine(this);
   }
   set1(x,y) {
     this.setState({
