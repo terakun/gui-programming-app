@@ -96,9 +96,7 @@ class App extends React.Component {
 
   _onMouseMove(e) {
     this.setState({ mouseX: e.pageX, mouseY: e.pageY });
-    console.log(this.state.lines);
     if(this.dragComp !== -1 && this.dragComp !== undefined){
-      console.log("drag"+this.dragComp);
       let rect = ReactDOM.findDOMNode(this.opobj[this.dragComp]).getBoundingClientRect();
       let compX = rect.x + rect.width / 2;
       let compY = rect.y + rect.height / 2;
@@ -106,8 +104,6 @@ class App extends React.Component {
       let new_position = this.state.positions;
       new_position[this.dragComp] = [compX, compY];
 
-      console.log(this.state.lines);
-      console.log(this.state.lines.length);
       for(let i = 0 ; i < this.state.lines.length ; i+=1 ){
         let line = this.state.lines[i];
         if(line.state.id1 === this.dragComp){
