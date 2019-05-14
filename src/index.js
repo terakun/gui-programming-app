@@ -24,10 +24,11 @@ class App extends React.Component {
             isMouseDown: false,
             graph: new Graph(),
             positions: [[0, 0], [0, 0]],
-            lines: [],
-            distsensordata: 0,
-            leftsensordata: 0,
-            rightsensordata: 0,
+            sensordata: {
+                dist : 0,
+                left : 0,
+                right : 0,
+            },
             dragcomp: 0,
             currentnode: 0,
             timercount: 0,
@@ -67,11 +68,6 @@ class App extends React.Component {
         this.opobj.push(obj);
     }
 
-    addLine(obj) {
-        console.log("line:" + obj);
-        this.state.lines.push(obj);
-    }
-
     onOpen(event) {
         console.log("Connect successful!");
         this.sendinterval = setInterval(this.sendOperation, 100);
@@ -80,9 +76,11 @@ class App extends React.Component {
     onMessage(event) {
         let sensorarray = event.data.split(",").map(x => parseInt(x, 10));
         this.setState({
-            distsensordata: sensorarray[0],
-            leftsensordata: sensorarray[1],
-            rightsensordata: sensorarray[2],
+            sensordata:{
+                dist: sensorarray[0],
+                left: sensorarray[1],
+                right: sensorarray[2],
+            }
         });
     }
 
@@ -96,7 +94,6 @@ class App extends React.Component {
     }
 
     _onMouseMove(e) {
-        this.setState({mouseX: e.pageX, mouseY: e.pageY});
         if (this.dragComp !== -1 && this.dragComp !== undefined) {
             let rect = ReactDOM.findDOMNode(this.opobj[this.dragComp]).getBoundingClientRect();
             let compX = rect.x + rect.width / 2;
@@ -104,17 +101,11 @@ class App extends React.Component {
 
             let new_position = this.state.positions;
             new_position[this.dragComp] = [compX, compY];
-
-            for (let i = 0; i < this.state.lines.length; i += 1) {
-                let line = this.state.lines[i];
-                if (line.state.id1 === this.dragComp) {
-                    line.set1(compX, compY);
-                } else if (line.state.id2 === this.dragComp) {
-                    line.set2(compX, compY);
-                }
-            }
+            this.setState({
+                position: new_position,
+            });
         }
-        if (this.state.isMouseDown) this.refs.line.set2(this.state.mouseX, this.state.mouseY);
+        this.setState({mouseX: e.clientX, mouseY: e.clientY});
     }
 
     _onMouseClick(e) {
@@ -238,7 +229,7 @@ class App extends React.Component {
                 break;
             case "BranchDistSensor":
                 let dist = parseInt(attr.dist, 10);
-                if (dist > this.state.distsensordata) {
+                if (dist > this.state.sensordata.dist) {
                     nextnode = this.opobj[currentnode].belowdstnode;
                 } else {
                     nextnode = this.opobj[currentnode].abovedstnode;
@@ -308,7 +299,7 @@ class App extends React.Component {
                     let [x2, y2] = [this.state.positions[node_to][0], this.state.positions[node_to][1]];
                     return (
                         <Line keys={this.nodes_num * node_from + index} x1={x1} y1={y1} id1={node_from} x2={x2} y2={y2}
-                              id2={node_to} thickness={1} addLine={this.addLine.bind(this)} color="black"/>
+                              id2={node_to} thickness={1} color="black"/>
                     );
                 }));
         });
@@ -319,9 +310,9 @@ class App extends React.Component {
         const mouseY = this.state.mouseY;
         const isMouseDown = this.state.isMouseDown.toString();
         const currentnode = this.state.currentnode;
-        const distsensordata = this.state.distsensordata;
-        const leftsensordata = this.state.leftsensordata;
-        const rightsensordata = this.state.rightsensordata;
+        const distsensordata = this.state.sensordata.dist;
+        const leftsensordata = this.state.sensordata.left;
+        const rightsensordata = this.state.sensordata.right;
 
         const leftspeed = this.state.carstate.left;
         const rightspeed = this.state.carstate.right;
@@ -403,9 +394,8 @@ class App extends React.Component {
                         <div>
                             {(() => {
                                 if (this.state.isMouseDown) {
-                                    return (<Line ref='line' x1={selectedcompX} y1={selectedcompY} id1={-1} x2={mouseX}
-                                                  y2={mouseY} id2={-1} thickness={1} color="black"
-                                                  addLine={this.addLine.bind(this)}/>);
+                                    return (<Line x1={selectedcompX} y1={selectedcompY} id1={-1} x2={mouseX}
+                                                  y2={mouseY} id2={-1} thickness={1} color="black"/>);
                                 }
                             })()}
                         </div>
