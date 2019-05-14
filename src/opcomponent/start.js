@@ -9,6 +9,10 @@ export default class Start extends OpComponent {
         this.boxstyle.top = 40;
     }
 
+    getTopPosition() {
+        return [0,0];
+    }
+
     render() {
         const bottomstyle = {
             width: 100,
@@ -30,7 +34,7 @@ export default class Start extends OpComponent {
                     スタート
                 </div>
                 <strong className="no-cursor">
-                    <div style={bottomstyle} onMouseDown={() => {
+                    <div  ref='bottom' style={bottomstyle} onMouseDown={() => {
                         this.setCompFrom(this);
                     }}></div>
                 </strong>

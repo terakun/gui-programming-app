@@ -17,13 +17,13 @@ class App extends React.Component {
         this.state = {
             mouseX: 0,
             mouseY: 0,
-            selectedcompX: 0,
-            selectedcompY: 0,
-            clickFrom: 0,
+            clickFrom: -1,
             clickTo: 0,
             isMouseDown: false,
             graph: new Graph(),
             positions: [[0, 0], [0, 0]],
+            toppositions: [[0, 0], [0, 0]],
+            bottompositions: [[0, 0], [0, 0]],
             sensordata: {
                 dist : 0,
                 left : 0,
@@ -85,25 +85,24 @@ class App extends React.Component {
     }
 
     addComponent(node_name) {
-        const new_positions = Object.assign([], this.state.positions);
-        new_positions.push([0, 0]);
+        const new_toppositions = Object.assign([], this.state.toppositions);
+        const new_bottompositions = Object.assign([], this.state.bottompositions);
+        new_toppositions.push([0, 0]);
+        if(node_name !== "BranchDistSensor") {
+            new_bottompositions.push([0, 0]);
+        } else {
+            new_bottompositions.push([[0, 0],[0,0]]);
+        }
         this.setState({
-            positions: new_positions,
+            toppositions: new_toppositions,
+            bottompositions: new_bottompositions,
             graph: this.state.graph.addComponent(node_name),
         });
     }
 
     _onMouseMove(e) {
         if (this.dragComp !== -1 && this.dragComp !== undefined) {
-            let rect = ReactDOM.findDOMNode(this.opobj[this.dragComp]).getBoundingClientRect();
-            let compX = rect.x + rect.width / 2;
-            let compY = rect.y + rect.height / 2;
-
-            let new_position = this.state.positions;
-            new_position[this.dragComp] = [compX, compY];
-            this.setState({
-                position: new_position,
-            });
+            this.setOpCompPosition(this.dragComp);
         }
         this.setState({mouseX: e.clientX, mouseY: e.clientY});
     }
@@ -112,23 +111,35 @@ class App extends React.Component {
         this.setState({isMouseDown: true});
     }
 
+    setOpCompPosition(id) {
+        let new_toppositions = this.state.toppositions;
+        let new_bottompositions = this.state.bottompositions;
+
+        new_toppositions[id] = this.opobj[id].getTopPosition();
+        if (this.state.graph.nodes[id] !== "BranchDistSensor") {
+            new_bottompositions[id] = this.opobj[id].getBottomPosition();
+        } else {
+            new_bottompositions[id][0] = this.opobj[id].getBottomAbovePosition();
+            new_bottompositions[id][1] = this.opobj[id].getBottomBelowPosition();
+        }
+
+        this.setState({
+            toppositions: new_toppositions,
+            bottompositions: new_bottompositions,
+        });
+    }
+
     setCompFrom(comp) {
         console.log("From:" + comp.number);
 
-        let rect = ReactDOM.findDOMNode(this.opobj[comp.number]).getBoundingClientRect();
-        let compX = rect.x + rect.width / 2;
-        let compY = rect.y + rect.height / 2;
+        this.setOpCompPosition(comp.number);
 
-        let new_position = this.state.positions;
-        new_position[comp.number] = [compX, compY];
         this.setState({
-            selectedcompX: compX,
-            selectedcompY: compY,
             clickFrom: comp.number,
             isMouseDown: true,
-            position: new_position,
         });
     }
+
 
     setCompTo(comp) {
         console.log("To:" + comp.number);
@@ -142,12 +153,7 @@ class App extends React.Component {
                 if (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor") {
                     this.opobj[this.state.clickFrom].setBranch(comp.number);
                 }
-                let rect = ReactDOM.findDOMNode(this.opobj[comp.number]).getBoundingClientRect();
-                let compX = rect.x + rect.width / 2;
-                let compY = rect.y + rect.height / 2;
-
-                let new_position = this.state.positions;
-                new_position[comp.number] = [compX, compY];
+                this.setOpCompPosition(comp.number);
 
                 this.setState({
                     clickTo: comp.number,
@@ -295,10 +301,21 @@ class App extends React.Component {
         return this.state.graph.edges.map((nodes, node_from) => {
             return (
                 nodes.map((node_to, index) => {
-                    let [x1, y1] = [this.state.positions[node_from][0], this.state.positions[node_from][1]];
-                    let [x2, y2] = [this.state.positions[node_to][0], this.state.positions[node_to][1]];
+                    let pos1 = [0,0];
+                    if(this.state.graph.nodes[node_from] !== "BranchDistSensor"){
+                        pos1 = this.state.bottompositions[node_from];
+                    } else {
+                        if(node_to === this.opobj[node_from].abovedstnode) {
+                            pos1 = this.state.bottompositions[node_from][0];
+                        } else {
+                            pos1 = this.state.bottompositions[node_from][1];
+                        }
+                    }
+
+                    let pos2 = [0,0];
+                    pos2 = this.state.toppositions[node_to];
                     return (
-                        <Line keys={this.nodes_num * node_from + index} x1={x1} y1={y1} id1={node_from} x2={x2} y2={y2}
+                        <Line keys={this.nodes_num * node_from + index} x1={pos1[0]} y1={pos1[1]} id1={node_from} x2={pos2[0]} y2={pos2[1]}
                               id2={node_to} thickness={1} color="black"/>
                     );
                 }));
@@ -318,7 +335,6 @@ class App extends React.Component {
         const rightspeed = this.state.carstate.right;
         const timercount = this.state.timercount;
         const opobj = this.opobj;
-        const positions = this.state.positions;
         return (
             <div>
                 Debug Information
@@ -331,7 +347,8 @@ class App extends React.Component {
                 <div>rightspeed: {rightspeed}</div>
                 <div>timercount: {timercount}</div>
                 <div>opobj: {opobj.toString()}</div>
-                <div>positions: {positions.toString()}</div>
+                <div>toppositions: {this.state.toppositions.toString()}</div>
+                <div>bottompositions: {this.state.bottompositions.toString()}</div>
                 <div className="NodesInfo">
                     Nodes Information
                     <ol start="0">
@@ -359,8 +376,19 @@ class App extends React.Component {
             margin: "0 auto"
         };
 
-        const selectedcompX = this.state.selectedcompX;
-        const selectedcompY = this.state.selectedcompY;
+        let selectedcomppos = [0, 0];
+        if (this.state.clickFrom !== -1 && this.state.clickFrom !== undefined ){
+            if (this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor") {
+                selectedcomppos = this.state.bottompositions[this.state.clickFrom];
+                console.log("selectedcomppos" + selectedcomppos);
+            } else {
+                if (this.opobj[this.state.clickFrom].selected_above) {
+                    selectedcomppos = this.state.bottompositions[this.state.clickFrom][0];
+                } else {
+                    selectedcomppos = this.state.bottompositions[this.state.clickFrom][1];
+                }
+            }
+        }
 
         const mouseX = this.state.mouseX;
         const mouseY = this.state.mouseY;
@@ -394,7 +422,7 @@ class App extends React.Component {
                         <div>
                             {(() => {
                                 if (this.state.isMouseDown) {
-                                    return (<Line x1={selectedcompX} y1={selectedcompY} id1={-1} x2={mouseX}
+                                    return (<Line x1={selectedcomppos[0]} y1={selectedcomppos[1]} id1={-1} x2={mouseX}
                                                   y2={mouseY} id2={-1} thickness={1} color="black"/>);
                                 }
                             })()}

@@ -63,7 +63,7 @@ export default class Waitmsecs extends OpComponent {
     return (
       <div style={this.boxstyle} className="box">
         <strong className="no-cursor">
-          <div style={this.topstyle} onMouseDown={() => { this.setCompFrom(this); }} onMouseUp={() => { this.setCompTo(this); }}></div>
+          <div ref='top' style={this.topstyle} onMouseDown={() => { this.setCompFrom(this); }} onMouseUp={() => { this.setCompTo(this); }}></div>
         </strong>
         <div style={this.textstyle}>
           <strong className="no-cursor">
@@ -72,7 +72,7 @@ export default class Waitmsecs extends OpComponent {
           ms 待つ
             </div>
         <strong className="no-cursor">
-          <div style={this.bottomstyle} onMouseDown={() => { this.setCompFrom(this); }} onMouseUp={() => { this.setCompTo(this); }}></div>
+          <div ref='bottom' style={this.bottomstyle} onMouseDown={() => { this.setCompFrom(this); }} onMouseUp={() => { this.setCompTo(this); }}></div>
         </strong>
       </div>
     );

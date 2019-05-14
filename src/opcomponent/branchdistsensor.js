@@ -79,6 +79,20 @@ export default class BranchDistSensor extends OpComponent {
     this.selected_above = false;
   }
 
+  getBottomBelowPosition() {
+    let rect = this.refs.below.getBoundingClientRect();
+    let compX = rect.x + rect.width / 2;
+    let compY = rect.y + rect.height / 2;
+    return [compX, compY]
+  }
+
+  getBottomAbovePosition() {
+    let rect = this.refs.above.getBoundingClientRect();
+    let compX = rect.x + rect.width / 2;
+    let compY = rect.y + rect.height / 2;
+    return [compX, compY]
+  }
+
   renderOpComp() {
     if(this.props.running){
       this.boxstyle.background = "#0f0";
@@ -89,7 +103,7 @@ export default class BranchDistSensor extends OpComponent {
     return (
         <div style={this.boxstyle} className="box">
           <strong className="no-cursor">
-            <div style={this.topstyle} onMouseUp={() => { this.setCompTo(this); }}></div>
+            <div ref='top' style={this.topstyle} onMouseUp={() => { this.setCompTo(this); }}></div>
           </strong>
           <div style={this.textstyle}>
             距離センサーが
@@ -99,10 +113,10 @@ export default class BranchDistSensor extends OpComponent {
             cm
           </div>
           <strong className="no-cursor">
-            <div style={this.bottomleftstyle} onMouseDown={() => { this.selected_above = true;this.setCompFrom(this); }}>以上</div>
+            <div ref='above' style={this.bottomleftstyle} onMouseDown={() => { this.selected_above = true;this.setCompFrom(this); }}>以上</div>
           </strong>
           <strong className="no-cursor">
-            <div style={this.bottomrightstyle} onMouseDown={() => { this.selected_above = false;this.setCompFrom(this); }}>以下</div>
+            <div ref='below' style={this.bottomrightstyle} onMouseDown={() => { this.selected_above = false;this.setCompFrom(this); }}>以下</div>
           </strong>
         </div>
     );

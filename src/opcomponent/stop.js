@@ -36,13 +36,13 @@ export default class Stop extends OpComponent {
     return (
       <div style={this.boxstyle} className="box">
         <strong className="no-cursor">
-          <div style={this.topstyle} onMouseUp={() => { this.setCompTo(this); }}></div>
+          <div refs='top' style={this.topstyle} onMouseUp={() => { this.setCompTo(this); }}></div>
         </strong>
         <div style={this.textstyle}>
           ストップ
           </div>
         <strong className="no-cursor">
-          <div style={this.bottomstyle} onMouseDown={() => { this.setCompFrom(this); }}></div>
+          <div refs='bottom' style={this.bottomstyle} onMouseDown={() => { this.setCompFrom(this); }}></div>
         </strong>
       </div>
     )

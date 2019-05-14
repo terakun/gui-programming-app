@@ -29,6 +29,11 @@ export default class End extends OpComponent {
 
     }
 
+    getBottomPosition() {
+        return [0,0];
+    }
+
+
     renderOpComp() {
         if (this.props.running) {
             this.boxstyle.background = "#0f0";
@@ -39,7 +44,7 @@ export default class End extends OpComponent {
         return (
             <div style={this.boxstyle} className="box">
                 <strong className="no-cursor">
-                    <div style={this.topstyle} onMouseUp={() => {
+                    <div ref='top' style={this.topstyle} onMouseUp={() => {
                         this.setCompTo(this);
                     }}></div>
                 </strong>

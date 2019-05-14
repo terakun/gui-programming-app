@@ -87,7 +87,7 @@ export default class Wheel extends OpComponent {
     return (
         <div style={this.boxstyle} className="box">
           <strong className="no-cursor">
-          <div style={this.topstyle} onMouseUp={() => {this.setCompTo(this);}}></div>
+          <div ref='top' style={this.topstyle} onMouseUp={() => {this.setCompTo(this);}}></div>
           </strong>
           <div style={this.textstyle}>
             <select name="wheel" defaultValue={0} onChange={this.setWheel.bind(this)}>
@@ -108,7 +108,7 @@ export default class Wheel extends OpComponent {
             </select>
           </div>
           <strong className="no-cursor">
-          <div style={this.bottomstyle} onMouseDown={() => {this.setCompFrom(this);}}></div>
+          <div ref='bottom' style={this.bottomstyle} onMouseDown={() => {this.setCompFrom(this);}}></div>
           </strong>
         </div>
     );

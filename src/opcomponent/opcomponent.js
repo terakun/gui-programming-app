@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
 import Draggable from 'react-draggable';
 
 export default class OpComponent extends React.Component {
@@ -25,6 +26,20 @@ export default class OpComponent extends React.Component {
             borderRadius: 4,
             WebkitUserSelect: "none",
         };
+    }
+
+    getTopPosition() {
+        let rect = ReactDOM.findDOMNode(this.refs.top).getBoundingClientRect();
+        let compX = rect.x + rect.width / 2;
+        let compY = rect.y + rect.height / 2;
+        return [compX,compY]
+    }
+
+    getBottomPosition() {
+        let rect = ReactDOM.findDOMNode(this.refs.bottom).getBoundingClientRect();
+        let compX = rect.x + rect.width / 2;
+        let compY = rect.y + rect.height / 2;
+        return [compX,compY]
     }
 
     renderOpComp() {

@@ -1,10 +1,6 @@
 import React from 'react';
 
 export default class Line extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     let x1 = this.props.x1;
     let y1 = this.props.y1;
