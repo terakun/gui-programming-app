@@ -122,26 +122,26 @@ class App extends React.Component {
     }
 
     setCompFrom(comp) {
-        console.log("From:" + comp.state.number);
+        console.log("From:" + comp.number);
 
-        let rect = ReactDOM.findDOMNode(this.opobj[comp.state.number]).getBoundingClientRect();
+        let rect = ReactDOM.findDOMNode(this.opobj[comp.number]).getBoundingClientRect();
         let compX = rect.x + rect.width / 2;
         let compY = rect.y + rect.height / 2;
 
         let new_position = this.state.positions;
-        new_position[comp.state.number] = [compX, compY];
+        new_position[comp.number] = [compX, compY];
         this.setState({
             selectedcompX: compX,
             selectedcompY: compY,
-            clickFrom: comp.state.number,
+            clickFrom: comp.number,
             isMouseDown: true,
             position: new_position,
         });
     }
 
     setCompTo(comp) {
-        console.log("To:" + comp.state.number);
-        if (comp.state.number === this.state.clickFrom) {
+        console.log("To:" + comp.number);
+        if (comp.number === this.state.clickFrom) {
             this.setState({
                 isMouseDown: false,
             });
@@ -149,19 +149,19 @@ class App extends React.Component {
             if ((this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length === 0) ||
                 (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor" && this.state.graph.edges[this.state.clickFrom].length <= 1)) {
                 if (this.state.graph.nodes[this.state.clickFrom] === "BranchDistSensor") {
-                    this.opobj[this.state.clickFrom].setCompTo(comp.state.number);
+                    this.opobj[this.state.clickFrom].setBranch(comp.number);
                 }
-                let rect = ReactDOM.findDOMNode(this.opobj[comp.state.number]).getBoundingClientRect();
+                let rect = ReactDOM.findDOMNode(this.opobj[comp.number]).getBoundingClientRect();
                 let compX = rect.x + rect.width / 2;
                 let compY = rect.y + rect.height / 2;
 
                 let new_position = this.state.positions;
-                new_position[comp.state.number] = [compX, compY];
+                new_position[comp.number] = [compX, compY];
 
                 this.setState({
-                    clickTo: comp.state.number,
+                    clickTo: comp.number,
                     isMouseDown: false,
-                    graph: this.state.graph.addEdge(this.state.clickFrom, comp.state.number),
+                    graph: this.state.graph.addEdge(this.state.clickFrom, comp.number),
                 });
             }
         }
@@ -258,8 +258,8 @@ class App extends React.Component {
     }
 
     onStartDrag(obj) {
-        this.dragComp = obj.state.number;
-        console.log("start drag:" + obj.state.number);
+        this.dragComp = obj.number;
+        console.log("start drag:" + obj.number);
     }
 
     onStopDrag(obj) {
@@ -397,10 +397,9 @@ class App extends React.Component {
                         }}>Stop
                         </button>
                     </div>
-
+                    {this.renderEdges()}
+                    {this.renderOpComponents()}
                     <div>
-                        <div> {this.renderEdges()} </div>
-                        {this.renderOpComponents()}
                         <div>
                             {(() => {
                                 if (this.state.isMouseDown) {

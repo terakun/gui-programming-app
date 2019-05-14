@@ -1,73 +1,18 @@
 import React from 'react';
-import Draggable from 'react-draggable';
+import OpComponent from './opcomponent'
 
-export default class Wheel extends React.Component {
+export default class Wheel extends OpComponent {
   constructor(props){
     super(props);
     this.state = {
-      number: this.props.number,
-      setCompFrom: props.funcs.setCompFrom,
-      setCompTo: props.funcs.setCompTo,
       wheel: 0,
       direction: 0,
       power: 0,
     };
-    this.props.funcs.setOpComponentAttribute(this.state.number,this.getAttribute());
-    props.funcs.addOpObj(this);
-  }
+    this.props.funcs.setOpComponentAttribute(this.number,this.getAttribute());
+    this.boxstyle.height = 100;
 
-  getAttribute() {
-    return {
-      wheel: this.state.wheel,
-      direction: this.state.direction,
-      power: this.state.power,
-    }
-  }
-
-  setWheel(e) {
-    this.setState({ wheel: e.target.value, });
-    let attr = this.getAttribute();
-    attr.wheel = e.target.value;
-    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
-  }
-  setDirection(e) {
-    this.setState({ direction: e.target.value, });
-    let attr = this.getAttribute();
-    attr.direction = e.target.value;
-    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
-  }
-  setPower(e) {
-    this.setState({ power: e.target.value, });
-    let attr = this.getAttribute();
-    attr.power = e.target.value;
-    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
-  }
-
-  render() {
-    let boxstyle = {
-      width: 100,
-      height: 100,
-      left: "auto",
-      top: "auto",
-      border: "solid",
-      padding: "0 16px",
-      color: "#000",
-      background: "#fff",
-      position: "relative",
-      textAlign: "center",
-      borderRadius: 4,
-      WebkitUserSelect: "none",
-    };
-    if(this.props.running){
-      boxstyle.background = "#00f";
-    }
-
-    if(this.props.x !== undefined){
-      boxstyle.left = this.props.x;
-      boxstyle.top = this.props.y;
-    }
-
-    let topstyle = {
+    this.topstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -82,12 +27,12 @@ export default class Wheel extends React.Component {
       margin:"auto",
     };
 
-    let textstyle = {
+    this.textstyle = {
       position: "absolute",
       top: 20,
     };
 
-    let bottomstyle = {
+    this.bottomstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -101,14 +46,50 @@ export default class Wheel extends React.Component {
       right:0,
       margin:"auto",
     };
+  }
+
+  getAttribute() {
+    return {
+      wheel: this.state.wheel,
+      direction: this.state.direction,
+      power: this.state.power,
+    }
+  }
+
+  setWheel(e) {
+    this.setState({ wheel: e.target.value, });
+    let attr = this.getAttribute();
+    attr.wheel = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.number,attr);
+  }
+  setDirection(e) {
+    this.setState({ direction: e.target.value, });
+    let attr = this.getAttribute();
+    attr.direction = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.number,attr);
+  }
+  setPower(e) {
+    this.setState({ power: e.target.value, });
+    let attr = this.getAttribute();
+    attr.power = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.number,attr);
+  }
+
+  renderOpComp() {
+    if(this.props.running){
+      this.boxstyle.background = "#00f";
+    } else {
+      this.boxstyle.background = "#fff";
+    }
+
+
 
     return (
-      <Draggable cancel="strong" onDrag={this.handleDrag}>
-        <div style={boxstyle} className="box">
+        <div style={this.boxstyle} className="box">
           <strong className="no-cursor">
-          <div style={topstyle} onMouseUp={() => {this.state.setCompTo(this);}}></div>
+          <div style={this.topstyle} onMouseUp={() => {this.setCompTo(this);}}></div>
           </strong>
-          <div style={textstyle}>
+          <div style={this.textstyle}>
             <select name="wheel" defaultValue={0} onChange={this.setWheel.bind(this)}>
             <option value={0}>左</option>
             <option value={1}>右</option>
@@ -127,10 +108,9 @@ export default class Wheel extends React.Component {
             </select>
           </div>
           <strong className="no-cursor">
-          <div style={bottomstyle} onMouseDown={() => {this.state.setCompFrom(this);}}></div>
+          <div style={this.bottomstyle} onMouseDown={() => {this.setCompFrom(this);}}></div>
           </strong>
         </div>
-      </Draggable>
     );
   }
 }

@@ -4,11 +4,18 @@ import Draggable from 'react-draggable';
 export default class OpComponent extends React.Component {
     constructor(props) {
         super(props);
+        this.number = this.props.number;
+
+        this.setCompFrom = props.funcs.setCompFrom;
+        this.setCompTo = props.funcs.setCompTo;
+
+        props.funcs.addOpObj(this);
+
         this.boxstyle = {
             width: 100,
             height: 50,
-            left: 500,
-            top: 340,
+            left: "auto",
+            top: "auto",
             border: "solid",
             padding: "0 16px",
             color: "#000",
@@ -20,12 +27,20 @@ export default class OpComponent extends React.Component {
         };
     }
 
-    render() {
+    renderOpComp() {
+        return ;
+    }
+
+    render(){
+        if (this.props.x !== undefined) {
+            this.boxstyle.left = this.props.x;
+            this.boxstyle.top = this.props.y;
+        }
+
         return (
-            <Draggable cancel="strong" onDrag={this.props.handleDrag}>
-                <div style={this.boxstyle} className="box">
-                </div>
-            </Draggable>
+            <Draggable bounds="parent" cancel="strong" onStart={() => { this.props.funcs.onStartDrag(this); }} onStop={() => { this.props.funcs.onStopDrag(this); }}>
+                {this.renderOpComp()}
+            </Draggable >
         );
     }
 }

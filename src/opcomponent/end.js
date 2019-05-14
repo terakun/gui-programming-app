@@ -1,42 +1,17 @@
 import React from 'react';
+import OpComponent from './opcomponent'
 
-export default class End extends React.Component {
+export default class End extends OpComponent {
     constructor(props) {
         super(props);
         this.state = {
-            number: this.props.number,
-            setCompFrom: props.funcs.setCompFrom,
-            setCompTo: props.funcs.setCompTo,
-        };
-        props.funcs.addOpObj(this);
-    }
-
-    render() {
-        let boxstyle = {
-            width: 100,
-            height: 50,
-            right: 10,
-            bottom: 10,
-            border: "solid",
-            padding: "0 16px",
-            color: "#000",
-            background: "#fff",
-            position: "absolute",
-            textAlign: "center",
-            borderRadius: 4,
-            WebkitUserSelect: "none",
         };
 
-        if (this.props.running) {
-            boxstyle.background = "#0f0";
-        }
+        this.boxstyle.right = 10;
+        this.boxstyle.bottom = 50;
+        this.boxstyle.position = "absolute";
 
-        if (this.props.x !== undefined) {
-            boxstyle.left = this.props.x;
-            boxstyle.top = this.props.y;
-        }
-
-        const topstyle = {
+        this.topstyle = {
             width: 100,
             height: 10,
             border: "solid",
@@ -46,20 +21,29 @@ export default class End extends React.Component {
             top: -1,
         };
 
-        let textstyle = {
+        this.textstyle = {
             textAlign: "center",
             position: "absolute",
             top: "35%",
         };
 
+    }
+
+    renderOpComp() {
+        if (this.props.running) {
+            this.boxstyle.background = "#0f0";
+        } else {
+            this.boxstyle.background = "#fff";
+        }
+
         return (
-            <div style={boxstyle} className="box">
+            <div style={this.boxstyle} className="box">
                 <strong className="no-cursor">
-                    <div style={topstyle} onMouseUp={() => {
-                        this.state.setCompTo(this);
+                    <div style={this.topstyle} onMouseUp={() => {
+                        this.setCompTo(this);
                     }}></div>
                 </strong>
-                <div style={textstyle}>
+                <div style={this.textstyle}>
                     エンド
                 </div>
             </div>

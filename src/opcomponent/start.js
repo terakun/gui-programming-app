@@ -1,39 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import OpComponent from './opcomponent'
 
-export default class Start extends React.Component {
+export default class Start extends OpComponent {
     constructor(props) {
         super(props);
-        this.state = {
-            number: this.props.number,
-            setCompFrom: props.funcs.setCompFrom,
-            setCompTo: props.funcs.setCompTo,
-        };
-        props.funcs.addOpObj(this);
+        this.state = {};
+        this.boxstyle.left = 10;
+        this.boxstyle.top = 40;
     }
 
     render() {
-
-        let boxstyle = {
-            width: 100,
-            height: 50,
-            left: 10,
-            top: 40,
-            border: "solid",
-            padding: "0 16px",
-            color: "#000",
-            background: "#fff",
-            position: "relative",
-            textAlign: "center",
-            borderRadius: 4,
-            WebkitUserSelect: "none",
-            position: "absolute"
-        };
-        if (this.props.x !== undefined) {
-            boxstyle.left = this.props.x;
-            boxstyle.top = this.props.y;
-        }
-
         const bottomstyle = {
             width: 100,
             height: 10,
@@ -49,18 +25,16 @@ export default class Start extends React.Component {
         };
 
         return (
-            <div style={boxstyle} className="box">
+            <div style={this.boxstyle} className="box">
                 <div style={textstyle}>
                     スタート
                 </div>
                 <strong className="no-cursor">
                     <div style={bottomstyle} onMouseDown={() => {
-                        this.state.setCompFrom(this);
+                        this.setCompFrom(this);
                     }}></div>
                 </strong>
             </div>
         );
     }
 }
-
-
