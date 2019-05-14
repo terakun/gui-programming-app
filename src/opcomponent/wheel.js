@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 
 export default class Wheel extends React.Component {
@@ -9,8 +8,39 @@ export default class Wheel extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
+      wheel: 0,
+      direction: 0,
+      power: 0,
     };
+    this.props.funcs.setOpComponentAttribute(this.state.number,this.getAttribute());
+    props.funcs.addOpObj(this);
+  }
 
+  getAttribute() {
+    return {
+      wheel: this.state.wheel,
+      direction: this.state.direction,
+      power: this.state.power,
+    }
+  }
+
+  setWheel(e) {
+    this.setState({ wheel: e.target.value, });
+    let attr = this.getAttribute();
+    attr.wheel = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
+  }
+  setDirection(e) {
+    this.setState({ direction: e.target.value, });
+    let attr = this.getAttribute();
+    attr.direction = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
+  }
+  setPower(e) {
+    this.setState({ power: e.target.value, });
+    let attr = this.getAttribute();
+    attr.power = e.target.value;
+    this.props.funcs.setOpComponentAttribute(this.state.number,attr);
   }
 
   render() {
@@ -28,6 +58,10 @@ export default class Wheel extends React.Component {
       borderRadius: 4,
       WebkitUserSelect: "none",
     };
+    if(this.props.running){
+      boxstyle.background = "#00f";
+    }
+
     if(this.props.x !== undefined){
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;
@@ -69,27 +103,27 @@ export default class Wheel extends React.Component {
     };
 
     return (
-      <Draggable cancel="strong" >
+      <Draggable cancel="strong" onDrag={this.handleDrag}>
         <div style={boxstyle} className="box">
           <strong className="no-cursor">
           <div style={topstyle} onMouseUp={() => {this.state.setCompTo(this);}}></div>
           </strong>
           <div style={textstyle}>
-            <select name="direction">
-            <option value="1" selected>左</option>
-            <option value="2">右</option>
+            <select name="wheel" defaultValue={0} onChange={this.setWheel.bind(this)}>
+            <option value={0}>左</option>
+            <option value={1}>右</option>
             </select>
             タイヤを
-            <select name="direction">
-            <option value="1" selected>前</option>
-            <option value="2">後</option>
+            <select name="direction" defaultValue={0} onChange={this.setDirection.bind(this)}>
+            <option value={0}>前</option>
+            <option value={1}>後</option>
             </select>
             に
-            <select name="power">
-            <option value="1" selected>強</option>
-            <option value="2">中</option>
-            <option value="3">弱</option>
-            <option value="4">止</option>
+            <select name="power" defaultValue={0} onChange={this.setPower.bind(this)}>
+            <option value={3}>強</option>
+            <option value={2}>中</option>
+            <option value={1}>弱</option>
+            <option value={0}>止</option>
             </select>
           </div>
           <strong className="no-cursor">

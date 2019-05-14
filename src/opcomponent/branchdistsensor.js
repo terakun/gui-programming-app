@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Draggable from 'react-draggable';
 
 export default class BranchDistSensor extends React.Component {
@@ -9,13 +8,36 @@ export default class BranchDistSensor extends React.Component {
       number: this.props.number,
       setCompFrom: props.funcs.setCompFrom,
       setCompTo: props.funcs.setCompTo,
+      dist: 0,
     };
+    this.selected_above = false;
+    this.abovedstnode = null;
+    this.belowdstnode = null;
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: this.state.dist });
+    this.setCompTo = this.setCompTo.bind(this);
+    props.funcs.addOpObj(this);
+  }
+
+  setDist(e) {
+    this.setState({ dist: e.target.value, });
+    this.props.funcs.setOpComponentAttribute(this.state.number,{ dist: e.target.value });
+  }
+
+  setCompTo(id) {
+    if(this.selected_above){
+      this.abovedstnode = id;
+      console.log("above:"+id);
+    } else {
+      this.belowdstnode = id;
+      console.log("below:"+id);
+    }
+    this.selected_above = false;
   }
 
   render() {
     let boxstyle = {
       width: 100,
-      height: 70,
+      height: 100,
       left: "auto",
       top: "auto",
       border: "solid",
@@ -31,10 +53,13 @@ export default class BranchDistSensor extends React.Component {
       boxstyle.left = this.props.x;
       boxstyle.top = this.props.y;
     }
+    if(this.props.running){
+      boxstyle.background = "#0f0";
+    }
 
     let topstyle = {
       marginLeft: "auto",
-      width:200,
+      width:100,
       height:20,
       borderRadius: 4,
       border: "none",
@@ -52,7 +77,7 @@ export default class BranchDistSensor extends React.Component {
       top: "35%",
     };
 
-    let bottom1style = {
+    let bottomleftstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -65,7 +90,7 @@ export default class BranchDistSensor extends React.Component {
       margin:"auto",
     };
 
-    let bottom2style = {
+    let bottomrightstyle = {
       marginLeft: "auto",
       width:50,
       height:20,
@@ -81,17 +106,24 @@ export default class BranchDistSensor extends React.Component {
     return (
       <Draggable cancel="strong" >
         <div style={boxstyle} className="box">
+          <strong className="no-cursor">
+            <div style={topstyle} onMouseUp={() => { this.state.setCompTo(this); }}></div>
+          </strong>
 
-          <div>
-            距離センサーが<input text style={{width:40,}}/>cm
+          <div style={textstyle}>
+            距離センサーが
+            <strong className="no-cursor">
+              <input style={{ width: 40 }} value={this.state.dist} onChange={this.setDist.bind(this)} />
+            </strong>
+            cm
           </div>
 
           <strong className="no-cursor">
-          <div style={bottom1style} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}>以上</div>
+            <div style={bottomleftstyle} onMouseDown={() => { this.selected_above = true;this.state.setCompFrom(this); }}>以上</div>
           </strong>
 
           <strong className="no-cursor">
-          <div style={bottom2style} onMouseDown={() => {this.state.setCompFrom(this);}} onMouseUp={() => {this.state.setCompTo(this);}}>以下</div>
+            <div style={bottomrightstyle} onMouseDown={() => { this.selected_above = false;this.state.setCompFrom(this); }}>以下</div>
           </strong>
 
         </div>
