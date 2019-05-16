@@ -26,6 +26,32 @@ export default class OpComponent extends React.Component {
             borderRadius: 4,
             WebkitUserSelect: "none",
         };
+
+        this.topstyle = {
+            marginLeft: "auto",
+            borderRadius: 4,
+            border: "solid",
+            color: "#f2df6b",
+            background: "#f2df6b",
+            position: "absolute",
+            top: 0,
+            left:0,
+            right:0,
+            margin:"auto",
+        };
+
+        this.bottomstyle = {
+            marginLeft: "auto",
+            borderRadius: 4,
+            border: "solid",
+            color: "#e174bb",
+            background: "#e174bb",
+            position: "absolute",
+            bottom: 0,
+            left:0,
+            right:0,
+            margin:"auto",
+        };
     }
 
     getTopPosition() {

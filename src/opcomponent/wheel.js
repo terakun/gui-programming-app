@@ -12,40 +12,22 @@ export default class Wheel extends OpComponent {
     this.props.funcs.setOpComponentAttribute(this.number,this.getAttribute());
     this.boxstyle.height = 100;
 
-    this.topstyle = {
-      marginLeft: "auto",
-      width:50,
-      height:20,
-      borderRadius: 4,
-      border: "none",
-      color: "#fff",
-      position: "absolute",
-      top: 0,
-      background: "#239",
-      left:0,
-      right:0,
-      margin:"auto",
-    };
+      this.topstyle = {
+          ...this.topstyle,
+          width: 70,
+          height: 10,
+      };
 
     this.textstyle = {
       position: "absolute",
       top: 20,
     };
 
-    this.bottomstyle = {
-      marginLeft: "auto",
-      width:50,
-      height:20,
-      borderRadius: 4,
-      border: "none",
-      color: "#fff",
-      position: "absolute",
-      bottom: 0,
-      background: "#239",
-      left:0,
-      right:0,
-      margin:"auto",
-    };
+      this.bottomstyle = {
+          ...this.bottomstyle,
+          width: 70,
+          height: 10,
+      };
   }
 
   getAttribute() {
