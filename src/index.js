@@ -102,6 +102,7 @@ class App extends React.Component {
 
     _onMouseMove(e) {
         if (this.dragComp !== -1 && this.dragComp !== undefined) {
+            console.log(this.dragComp);
             this.setOpCompPosition(this.dragComp);
         }
         this.setState({mouseX: e.clientX, mouseY: e.clientY});
@@ -142,6 +143,7 @@ class App extends React.Component {
 
 
     setCompTo(comp) {
+        console.log("From:" + comp.number);
         console.log("To:" + comp.number);
         if (comp.number === this.state.clickFrom) {
             this.setState({
@@ -335,6 +337,7 @@ class App extends React.Component {
         const rightspeed = this.state.carstate.right;
         const timercount = this.state.timercount;
         const opobj = this.opobj;
+
         return (
             <div>
                 Debug Information
