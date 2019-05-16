@@ -32,8 +32,8 @@ export default class Graph {
       visited[node] = true;
       console.log(this.nodes[node]);
       if (node !== this.end_node) {
-        if ((this.nodes[node] === "BranchDistSensor" && this.edges[node].length < 2) ||
-          (this.nodes[node] !== "BranchDistSensor" && this.edges[node].length === 0)) {
+        if (((this.nodes[node] === "BranchDistSensor" || this.nodes[node] === "LineSensor" ) && this.edges[node].length < 2) ||
+          ((this.nodes[node] !== "BranchDistSensor" && this.nodes[node] !== "LineSensor") && this.edges[node].length === 0)) {
           return false;
         }
       }
