@@ -13,7 +13,6 @@ export default class Line extends React.Component {
         const style = {
             padding: 0,
             margin: 0,
-            height: thickness,
             backgroundColor: color,
             lineHeight: 1,
             position: "absolute",

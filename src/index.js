@@ -22,7 +22,6 @@ class App extends React.Component {
             clickTo: 0,
             isMouseDown: false,
             graph: new Graph(),
-            positions: [[0, 0], [0, 0]],
             toppositions: [[0, 0], [0, 0]],
             bottompositions: [[0, 0], [0, 0]],
             sensordata: {
@@ -38,7 +37,8 @@ class App extends React.Component {
             carstate: {
                 left: 3,
                 right: 3
-            }
+            },
+            isrunning: false,
         };
 
         // 動かしている最中のオブジェクトnumber
@@ -176,6 +176,9 @@ class App extends React.Component {
         }
         this.interval = setInterval(this.stepProgram, 10);
         console.log("connected");
+        this.setState({
+            isrunning: true,
+        });
         return true;
     }
 
@@ -207,6 +210,9 @@ class App extends React.Component {
                 carstate.right = 3;
                 console.log("Program Terminated");
                 clearInterval(this.interval);
+                this.setState({
+                    isrunning: false,
+                });
                 break;
             case "Wheel":
                 let wheel = parseInt(attr.wheel, 10);
@@ -274,6 +280,10 @@ class App extends React.Component {
 
     stopProgram() {
         clearInterval(this.interval);
+        this.setState({
+            currentnode: 0,
+            isrunning: false,
+        });
     }
 
 
@@ -443,7 +453,7 @@ class App extends React.Component {
                         </div>
                     </div>
                 </div>
-                <button onClick={this.runProgram.bind(this)}>実行</button>
+                <button onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</button>
                 <button onClick={this.stopProgram.bind(this)}>やめる</button>
                 <button onClick={() => {
                     this.connection = new WebSocket("ws:127.0.0.1:8000");
