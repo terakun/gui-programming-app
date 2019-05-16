@@ -325,17 +325,14 @@ class App extends React.Component {
     }
 
     renderDebugWindow() {
-        const mouseX = this.state.mouseX;
-        const mouseY = this.state.mouseY;
+        const {mouseX, mouseY, currentnode, timercount} = this.state;
         const isMouseDown = this.state.isMouseDown.toString();
-        const currentnode = this.state.currentnode;
         const distsensordata = this.state.sensordata.dist;
         const leftsensordata = this.state.sensordata.left;
         const rightsensordata = this.state.sensordata.right;
 
         const leftspeed = this.state.carstate.left;
         const rightspeed = this.state.carstate.right;
-        const timercount = this.state.timercount;
         const opobj = this.opobj;
 
         return (
