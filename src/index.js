@@ -258,6 +258,7 @@ class App extends React.Component {
             case "Stop":
                 carstate.left = 3;
                 carstate.right = 3;
+                nextnode = nextedge[0];
                 break;
             default:
         }
