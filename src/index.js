@@ -105,7 +105,6 @@ class App extends React.Component {
 
     _onMouseMove(e) {
         if (this.dragComp !== -1 && this.dragComp !== undefined) {
-            console.log(this.dragComp);
             this.setOpCompPosition(this.dragComp);
         }
         this.setState({mouseX: e.clientX, mouseY: e.clientY});
@@ -146,9 +145,9 @@ class App extends React.Component {
 
 
     setCompTo(comp) {
-        console.log("From:" + comp.number);
+        console.log("From:" + this.state.clickFrom);
         console.log("To:" + comp.number);
-        if (comp.number === this.state.clickFrom) {
+        if (this.state.clickFrom === -1 || comp.number === this.state.clickFrom) {
             this.setState({
                 isMouseDown: false,
             });
@@ -391,7 +390,7 @@ class App extends React.Component {
         const style = {
             width: "95vw",
             height: "95vh",
-            position: "relative",
+            position: "static",
             border: "solid",
             padding: "0 16px",
             margin: "0 auto"
@@ -401,7 +400,6 @@ class App extends React.Component {
         if (this.state.clickFrom !== -1 && this.state.clickFrom !== undefined) {
             if (this.state.graph.nodes[this.state.clickFrom] !== "BranchDistSensor") {
                 selectedcomppos = this.state.bottompositions[this.state.clickFrom];
-                console.log("selectedcomppos" + selectedcomppos);
             } else {
                 if (this.opobj[this.state.clickFrom].selected_above) {
                     selectedcomppos = this.state.bottompositions[this.state.clickFrom][0];
@@ -441,17 +439,13 @@ class App extends React.Component {
                         </button>
                     </div>
                     {this.renderEdges()}
+                    {(() => {
+                        if (this.state.isMouseDown) {
+                            return (<Line x1={selectedcomppos[0]} y1={selectedcomppos[1]} id1={-1} x2={mouseX}
+                                y2={mouseY} id2={-1} thickness={1} color="black" />);
+                        }
+                    })()}
                     {this.renderOpComponents()}
-                    <div>
-                        <div>
-                            {(() => {
-                                if (this.state.isMouseDown) {
-                                    return (<Line x1={selectedcomppos[0]} y1={selectedcomppos[1]} id1={-1} x2={mouseX}
-                                                  y2={mouseY} id2={-1} thickness={1} color="black"/>);
-                                }
-                            })()}
-                        </div>
-                    </div>
                 </div>
                 <button onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</button>
                 <button onClick={this.stopProgram.bind(this)}>やめる</button>
