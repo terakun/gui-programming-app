@@ -12,13 +12,9 @@ export default class End extends OpComponent {
         this.boxstyle.position = "absolute";
 
         this.topstyle = {
+            ...this.topstyle,
             width: 100,
             height: 10,
-            border: "solid",
-            color: "#000",
-            background: "#239",
-            position: "absolute",
-            top: -1,
         };
 
         this.textstyle = {
