@@ -6,12 +6,13 @@ export default class End extends OpComponent {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
         };
 
-        this.boxstyle.height = 50;
-        this.boxstyle.right = 80;
-        this.boxstyle.bottom = 100;
         this.boxstyle.position = "absolute";
+        this.boxstyle.height = 50;
+        this.boxstyle.left = 1050;
+        this.boxstyle.top = 500;
 
         this.topstyle = {
             ...this.topstyle,

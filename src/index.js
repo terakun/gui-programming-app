@@ -15,6 +15,30 @@ import Readability from "./opcomponent/readability";
 import Line from './line'
 import Graph from './graph'
 
+class TrashBox extends React.Component {
+    constructor(props){
+        super(props);
+        this.boxstyle = {
+            width: 100,
+            height: 60,
+            left: 40,
+            top: 470,
+            color: "#fff",
+            background: "#333",
+            position: "absolute",
+            textAlign: "center",
+            borderRadius: 4,
+            WebkitUserSelect: "none",
+        };
+    }
+    render() {
+        return (
+            <Panel style={this.boxstyle}>
+                ゴミ箱
+            </Panel>
+        );
+    }
+}
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -47,6 +71,12 @@ class App extends React.Component {
                     power: 0,
                 }
             },
+            pwm: {
+                left: [0, 150, 200, 255],
+                right: [0, 150, 200, 255],
+            },
+            linesensor_threshold: 512,
+            swaplinesensor: false,
             isrunning: false,
         };
 
@@ -54,11 +84,6 @@ class App extends React.Component {
         this.dragComp = -1;
 
         this.opobj = [];
-
-        this.pwm= {
-            left: [0,150, 200, 255],
-            right: [0,150, 200, 255],
-        };
 
         this.connection = new WebSocket("ws:127.0.0.1:8000");
         this.connection.onopen = this.onOpen.bind(this);
@@ -92,13 +117,23 @@ class App extends React.Component {
 
     onMessage(event) {
         let sensorarray = event.data.split(",").map(x => parseInt(x, 10));
-        this.setState({
-            sensordata: {
-                dist: sensorarray[0],
-                left: sensorarray[1],
-                right: sensorarray[2],
-            }
-        });
+        if(!this.state.swaplinesensor){
+            this.setState({
+                sensordata: {
+                    dist: sensorarray[0],
+                    left: sensorarray[1],
+                    right: sensorarray[2],
+                }
+            });
+        } else {
+            this.setState({
+                sensordata: {
+                    dist: sensorarray[0],
+                    left: sensorarray[2],
+                    right: sensorarray[1],
+                }
+            });
+        }
     }
 
     addComponent(node_name) {
@@ -133,7 +168,7 @@ class App extends React.Component {
         let new_bottompositions = this.state.bottompositions;
 
         new_toppositions[id] = this.opobj[id].getTopPosition();
-        if (this.state.graph.nodes[id] !== "BranchDistSensor" && this.state.graph.nodes[id] !== "LineSensor") {
+        if (!this.isBranchComp(id)) {
             new_bottompositions[id] = this.opobj[id].getBottomPosition();
         } else {
             new_bottompositions[id][0] = this.opobj[id].getBottomAbovePosition();
@@ -148,6 +183,26 @@ class App extends React.Component {
 
     setCompFrom(comp) {
         console.log("From:" + comp.number);
+
+        if (!this.isBranchComp(comp.number)) {
+            if(this.state.graph.edges[comp.number].length===1){
+                this.setState({
+                    graph:this.state.graph.deleteEdge(comp.number,this.state.graph.edges[comp.number][0]),
+                });
+            }
+        } else {
+            if(this.opobj[comp.number].abovedstnode !== null && this.opobj[comp.number].selected_above){
+                this.setState({
+                    graph: this.state.graph.deleteEdge(comp.number, this.opobj[comp.number].abovedstnode),
+                });
+                this.opobj[comp.number].abovedstnode = null;
+            } else if (this.opobj[comp.number].belowdstnode !== null && !this.opobj[comp.number].selected_above){
+                this.setState({
+                    graph: this.state.graph.deleteEdge(comp.number, this.opobj[comp.number].belowdstnode),
+                });
+                this.opobj[comp.number].belowdstnode = null;
+            }
+        }
 
         this.setOpCompPosition(comp.number);
 
@@ -166,10 +221,9 @@ class App extends React.Component {
                 isMouseDown: false,
             });
         } else {
-            let compname = this.state.graph.nodes[this.state.clickFrom];
-            if ((compname !== "BranchDistSensor" && compname !== "LineSensor" && this.state.graph.edges[this.state.clickFrom].length === 0) ||
-                (( compname === "BranchDistSensor" || compname === "LineSensor" )&& this.state.graph.edges[this.state.clickFrom].length <= 1)) {
-                if (compname === "BranchDistSensor" || compname === "LineSensor") {
+            if ((!this.isBranchComp(this.state.clickFrom) && this.state.graph.edges[this.state.clickFrom].length === 0) ||
+                ( this.isBranchComp(this.state.clickFrom) && this.state.graph.edges[this.state.clickFrom].length <= 1)) {
+                if (this.isBranchComp(this.state.clickFrom)) {
                     this.opobj[this.state.clickFrom].setBranch(comp.number);
                 }
                 this.setOpCompPosition(comp.number);
@@ -204,10 +258,10 @@ class App extends React.Component {
             this.connection.send("s");
             console.log("s");
         } else {
-            let left_speed = this.pwm.left[leftstate.power];
+            let left_speed = this.state.pwm.left[leftstate.power];
             if(!leftstate.forward) left_speed = -left_speed;
 
-            let right_speed = this.pwm.right[rightstate.power];
+            let right_speed = this.state.pwm.right[rightstate.power];
             if(!rightstate.forward) right_speed = -right_speed;
 
             this.connection.send("r" + right_speed.toString());
@@ -278,13 +332,13 @@ class App extends React.Component {
                 let isright = attr.isright;
                 console.log(isright);
                 if(isright){
-                    if (this.state.sensordata.right > this.linesensor_threshold) {
+                    if (this.state.sensordata.right > this.state.linesensor_threshold) {
                         nextnode = this.opobj[currentnode].belowdstnode;
                     } else {
                         nextnode = this.opobj[currentnode].abovedstnode;
                     }
                 } else {
-                    if (this.state.sensordata.left > this.linesensor_threshold) {
+                    if (this.state.sensordata.left > this.state.linesensor_threshold) {
                         nextnode = this.opobj[currentnode].belowdstnode;
                     } else {
                         nextnode = this.opobj[currentnode].abovedstnode;
@@ -314,7 +368,42 @@ class App extends React.Component {
         console.log("start drag:" + obj.number);
     }
 
+    isBranchComp(id){
+        return (this.state.graph.nodes[id] === "BranchDistSensor" || this.state.graph.nodes[id] === "LineSensor");
+    }
+
     onStopDrag(obj) {
+        let rect = ReactDOM.findDOMNode(obj).getBoundingClientRect();
+        let rect_trash = ReactDOM.findDOMNode(this.refs.trashbox).getBoundingClientRect();
+        let compX = rect.x + rect.width / 2;
+        let compY = rect.y + rect.height / 2;
+        let deletelist = [];
+        let new_graph = this.state.graph;
+        if(rect_trash.x <= compX && compX < rect_trash.x+rect_trash.width &&
+           rect_trash.y <= compY && compY < rect_trash.y+rect_trash.height){
+               let node_from = 0;
+               for(let edge of this.state.graph.edges){
+                   for(let node_to of edge){
+                       if(node_to === obj.number){
+                           if(this.isBranchComp(node_from)){
+                               if(this.opobj[node_from].abovedstnode === node_to){
+                                this.opobj[node_from].abovedstnode = null;
+                               } else if(this.opobj[node_from].belowdstnode === node_to){
+                                this.opobj[node_from].belowdstnode = null;
+                               }
+                           }
+                           deletelist.push([node_from, node_to]);
+                       } else if(node_from === obj.number){
+                           deletelist.push([node_from, node_to]);
+                       }
+                   }
+                   node_from++;
+               }
+               this.opobj[obj.number].disable();
+               this.setState({
+                   graph: new_graph.deleteEdges(deletelist),
+               });
+        }
         this.dragComp = -1;
     }
 
@@ -397,8 +486,33 @@ class App extends React.Component {
         });
     }
 
-    setPWMvalue(idx,e) {
+    setPWMLeftValue(idx,e) {
+        let left = this.state.pwm.left.slice();
+        console.log(idx);
+        left[idx] = e.target.value;
+        this.setState({
+            pwm : {
+                left : left,
+                right : this.state.pwm.right,
+            }
+        });
+    }
+    setPWMRightValue(idx,e) {
+        let right = this.state.pwm.right.slice();
+        right[idx] = e.target.value;
+        this.setState({
+            pwm : {
+                left : this.state.pwm.left,
+                right : right,
+            }
+        });
+    }
 
+    swapLineSensor(e){
+        console.log(e.checked);
+        this.setState({
+            swaplinesensor: e.checked,
+        });
     }
 
     renderDebugWindow() {
@@ -407,8 +521,8 @@ class App extends React.Component {
         const distsensordata = this.state.sensordata.dist;
         const leftsensordata = this.state.sensordata.left;
         const rightsensordata = this.state.sensordata.right;
-        const leftspeed = this.pwm.left[this.state.carstate.left.power];
-        const rightspeed = this.pwm.right[this.state.carstate.right.power];
+        const leftspeed = this.state.pwm.left[this.state.carstate.left.power];
+        const rightspeed = this.state.pwm.right[this.state.carstate.right.power];
         const opobj = this.opobj;
 
         return (
@@ -416,22 +530,31 @@ class App extends React.Component {
                 Debug Information
 
                 <div>タイヤ右
-                    <div>弱<input value={this.pwm.right[1]} onChange={(e)=>{ this.pwm.right[1]=parseInt(e.target.value,10); }} /></div>
-                    <div>中<input value={this.pwm.right[2]} onChange={(e)=>{ this.pwm.right[2]=parseInt(e.target.value,10); }} /></div>
-                    <div>強<input value={this.pwm.right[3]} onChange={(e)=>{ this.pwm.right[3]=parseInt(e.target.value,10); }} /></div>
+                    <div>弱<input value={this.state.pwm.right[1]} onChange={this.setPWMRightValue.bind(this,1)} /></div>
+                    <div>中<input value={this.state.pwm.right[2]} onChange={this.setPWMRightValue.bind(this,2)} /></div>
+                    <div>強<input value={this.state.pwm.right[3]} onChange={this.setPWMRightValue.bind(this,3)} /></div>
                 </div>
 
                 <div>タイヤ左
-                    <div>弱<input value={this.pwm.left[1]} onChange={(e)=>{ this.pwm.left[1]=parseInt(e.target.value,10); }} /></div>
-                    <div>中<input value={this.pwm.left[2]} onChange={(e)=>{ this.pwm.left[2]=parseInt(e.target.value,10); }} /></div>
-                    <div>強<input value={this.pwm.left[3]} onChange={(e)=>{ this.pwm.left[3]=parseInt(e.target.value,10); }} /></div>
+                    <div>弱<input value={this.state.pwm.left[1]} onChange={this.setPWMLeftValue.bind(this,1)} /></div>
+                    <div>中<input value={this.state.pwm.left[2]} onChange={this.setPWMLeftValue.bind(this,2)} /></div>
+                    <div>強<input value={this.state.pwm.left[3]} onChange={this.setPWMLeftValue.bind(this,3)} /></div>
                 </div>
 
+                <div>光センサ
+                    <div>しきい値<input value={this.state.linesensor_threshold} onChange={(e)=>{this.setState({
+                        linesensor_threshold: e.target.value,
+                    })}} /></div>
+                    <div>左右入れ替え<input type="checkbox" checked={this.state.swaplinesensor} onChange={this.swapLineSensor.bind(this)} /></div>
+                </div>
                 <div>{mouseX} {mouseY} {isMouseDown}</div>
                 <div>currentnode: {currentnode}</div>
                 <div>distsensordata: {distsensordata}</div>
                 <div>leftsensordata: {leftsensordata}</div>
                 <div>rightsensordata: {rightsensordata}</div>
+                <div>pwmleft:{this.state.pwm.left}</div>
+                <div>pwmright:{this.state.pwm.right}</div>
+                <div>swapLineSensor:{this.state.swaplinesensor}</div>
                 <div>leftspeed: {leftspeed}</div>
                 <div>rightspeed: {rightspeed}</div>
                 <div>timercount: {timercount}</div>
@@ -457,12 +580,13 @@ class App extends React.Component {
 
     render() {
         const style = {
+            top: 10,
             width: "95vw",
-            height: "90vh",
+            height: "85vh",
             position: "static",
             background: "#f0f0f0",
             border: "solid",
-            padding: "0 16px",
+            padding: "10 16px",
             margin: "0 auto"
         };
 
@@ -487,7 +611,7 @@ class App extends React.Component {
                 <Panel onMouseMove={this._onMouseMove.bind(this)} onMouseUp={() => {
                     this.setState({isMouseDown: false})
                 }} style={style}>
-                    <div>
+                    <div style={{textAlign: "right"}}>
                         <Button color="primary" onClick={() => {
                             this.addComponent("Wheel");
                         }}>車を動かす
@@ -521,6 +645,7 @@ class App extends React.Component {
                         }
                     })()}
                     {this.renderOpComponents()}
+                    <TrashBox ref='trashbox'/>
                 </Panel>
                 <div style={{textAlign: "right"}}>
                     <Button color="primary" variant="fab" onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</Button>

@@ -6,6 +6,9 @@ import Panel from 'muicss/lib/react/panel';
 export default class Readability extends OpComponent {
     constructor(props) {
         super(props);
+        this.state = {
+            ...this.state,
+        };
         // override style
         this.boxstyle = {
             ...this.boxstyle,

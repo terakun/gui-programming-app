@@ -1,12 +1,12 @@
 import React from 'react';
 import OpComponent from './opcomponent'
 import Panel from 'muicss/lib/react/panel';
-import Input from 'muicss/lib/react/input';
 
 export default class BranchDistSensor extends OpComponent {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
             dist: 0,
         };
         this.selected_above = false;

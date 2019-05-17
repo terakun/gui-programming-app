@@ -6,6 +6,7 @@ export default class Waitmsecs extends OpComponent {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
             time: 0,
         };
 

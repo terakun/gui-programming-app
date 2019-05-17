@@ -18,7 +18,16 @@ export default class Graph {
   }
 
   deleteEdge(from,to) {
-    this.edges[from].splice(to,1);
+    const idx = this.edges[from].findIndex(node => node === to);
+    this.edges[from].splice(idx,1);
+    return this;
+  }
+
+  deleteEdges(deletelist) {
+    for(let [from,to] of deletelist){
+      this.deleteEdge(from,to);
+    }
+    return this;
   }
 
   setAttribute(id, attr) {

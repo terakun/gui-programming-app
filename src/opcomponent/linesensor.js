@@ -6,6 +6,7 @@ export default class LineSensor extends OpComponent {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
             isright: 0,
         };
         this.selected_above = false;

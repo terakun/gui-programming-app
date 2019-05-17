@@ -5,7 +5,7 @@ import Panel from 'muicss/lib/react/panel';
 export default class Stop extends OpComponent {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {...this.state};
 
         this.topstyle = {
             ...this.topstyle,

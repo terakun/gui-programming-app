@@ -6,6 +6,7 @@ export default class Wheel extends OpComponent {
   constructor(props){
     super(props);
     this.state = {
+      ...this.state,
       wheel: 0,
       direction: 0,
       power: 0,

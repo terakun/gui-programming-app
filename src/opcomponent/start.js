@@ -5,10 +5,13 @@ import Panel from 'muicss/lib/react/panel';
 export default class Start extends OpComponent {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            ...this.state,
+        };
         this.boxstyle.height = 50;
-        this.boxstyle.left = 10;
-        this.boxstyle.top = 40;
+        this.boxstyle.left = 20;
+        this.boxstyle.top = 10;
+        this.boxstyle.position = "absolute";
 
         this.bottomstyle = {
             ...this.bottomstyle,
