@@ -1,5 +1,6 @@
 import React from 'react';
 import OpComponent from './opcomponent'
+import Panel from 'muicss/lib/react/panel';
 
 export default class End extends OpComponent {
     constructor(props) {
@@ -7,8 +8,9 @@ export default class End extends OpComponent {
         this.state = {
         };
 
-        this.boxstyle.right = 10;
-        this.boxstyle.bottom = 50;
+        this.boxstyle.height = 50;
+        this.boxstyle.right = 80;
+        this.boxstyle.bottom = 100;
         this.boxstyle.position = "absolute";
 
         this.topstyle = {
@@ -18,9 +20,9 @@ export default class End extends OpComponent {
         };
 
         this.textstyle = {
+            position: "relative",
             textAlign: "center",
-            position: "absolute",
-            top: "35%",
+            top: "30%",
         };
 
     }
@@ -31,23 +33,18 @@ export default class End extends OpComponent {
 
 
     renderOpComp() {
-        if (this.props.running) {
-            this.boxstyle.background = "#0f0";
-        } else {
-            this.boxstyle.background = "#fff";
-        }
-
         return (
-            <div style={this.boxstyle} className="box">
-                <strong className="no-cursor">
+            <strong className="no-cursor">
+
+                <Panel style={this.boxstyle} className="box">
                     <div ref='top' style={this.topstyle} onMouseUp={() => {
                         this.setCompTo(this);
                     }}></div>
-                </strong>
-                <div style={this.textstyle}>
-                    エンド
-                </div>
-            </div>
+                    <div style={this.textstyle}>
+                        エンド
+                    </div>
+                </Panel>
+            </strong>
         );
     }
 }

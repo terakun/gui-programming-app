@@ -1,5 +1,6 @@
 import React from 'react';
 import OpComponent from './opcomponent'
+import Panel from 'muicss/lib/react/panel';
 
 export default class LineSensor extends OpComponent {
     constructor(props) {
@@ -14,21 +15,23 @@ export default class LineSensor extends OpComponent {
         this.props.funcs.setOpComponentAttribute(this.number, {dist: this.state.dist});
         this.setBranch = this.setBranch.bind(this);
 
-        this.boxstyle.height = 100;
+        this.boxstyle.width = 160;
+        this.boxstyle.height = 65;
         this.topstyle = {
             ...this.topstyle,
-            width: 70,
+            width: 160,
             height: 10,
         };
 
         this.textstyle = {
-            position: "absolute",
-            top: "35%",
+            position: "relative",
+            textAlign: "center",
+            top: "30%",
         };
 
         this.bottomleftstyle = {
             ...this.bottomstyle,
-            width: 50,
+            width: 60,
             height: 20,
             border: "none",
             color: "#fff",
@@ -39,7 +42,7 @@ export default class LineSensor extends OpComponent {
 
         this.bottomrightstyle = {
             ...this.bottomstyle,
-            width: 50,
+            width: 60,
             height: 20,
             border: "none",
             color: "#fff",
@@ -88,7 +91,7 @@ export default class LineSensor extends OpComponent {
         }
 
         return (
-            <div style={this.boxstyle} className="box">
+            <Panel style={this.boxstyle} className="box">
                 <strong className="no-cursor">
                     <div ref='top' style={this.topstyle} onMouseUp={() => {
                         this.setCompTo(this);
@@ -115,7 +118,7 @@ export default class LineSensor extends OpComponent {
                     }}>明るい
                     </div>
                 </strong>
-            </div>
+            </Panel>
         );
     }
 }

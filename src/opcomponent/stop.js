@@ -1,5 +1,6 @@
 import React from 'react';
 import OpComponent from './opcomponent';
+import Panel from 'muicss/lib/react/panel';
 
 export default class Stop extends OpComponent {
     constructor(props) {
@@ -14,8 +15,9 @@ export default class Stop extends OpComponent {
         };
 
         this.textstyle = {
-            position: "absolute",
-            top: "25%",
+            position: "relative",
+            textAlign: "center",
+            top: "30%",
         };
 
         this.bottomstyle = {
@@ -28,7 +30,7 @@ export default class Stop extends OpComponent {
 
     renderOpComp() {
         return (
-            <div style={this.boxstyle} className="box">
+            <Panel style={this.boxstyle} className="box">
                 <strong className="no-cursor">
                     <div ref='top' style={this.topstyle} onMouseUp={() => {
                         this.setCompTo(this);
@@ -42,7 +44,7 @@ export default class Stop extends OpComponent {
                         this.setCompFrom(this);
                     }}></div>
                 </strong>
-            </div>
+            </Panel>
         );
     }
 }

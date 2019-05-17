@@ -17,6 +17,10 @@ export default class Graph {
     return this;
   }
 
+  deleteEdge(from,to) {
+    this.edges[from].splice(to,1);
+  }
+
   setAttribute(id, attr) {
     this.attributes[id] = attr;
     return this;

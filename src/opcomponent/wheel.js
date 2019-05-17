@@ -1,5 +1,6 @@
 import React from 'react';
 import OpComponent from './opcomponent'
+import Panel from 'muicss/lib/react/panel';
 
 export default class Wheel extends OpComponent {
   constructor(props){
@@ -10,7 +11,7 @@ export default class Wheel extends OpComponent {
       power: 0,
     };
     this.props.funcs.setOpComponentAttribute(this.number,this.getAttribute());
-    this.boxstyle.height = 100;
+    this.boxstyle.width = 180;
 
       this.topstyle = {
           ...this.topstyle,
@@ -19,7 +20,8 @@ export default class Wheel extends OpComponent {
       };
 
     this.textstyle = {
-      position: "absolute",
+      position: "relative",
+      textAlign: "center",
       top: 20,
     };
 
@@ -67,7 +69,7 @@ export default class Wheel extends OpComponent {
 
 
     return (
-        <div style={this.boxstyle} className="box">
+        <Panel style={this.boxstyle} className="box">
           <strong className="no-cursor">
           <div ref='top' style={this.topstyle} onMouseUp={() => {this.setCompTo(this);}}></div>
           </strong>
@@ -92,7 +94,7 @@ export default class Wheel extends OpComponent {
           <strong className="no-cursor">
           <div ref='bottom' style={this.bottomstyle} onMouseDown={() => {this.setCompFrom(this);}}></div>
           </strong>
-        </div>
+        </Panel>
     );
   }
 }

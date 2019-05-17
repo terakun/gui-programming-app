@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Button from 'muicss/lib/react/button';
+import Panel from 'muicss/lib/react/panel';
 
 import Start from './opcomponent/start';
 import End from './opcomponent/end';
@@ -200,6 +202,7 @@ class App extends React.Component {
         let rightstate = this.state.carstate.right;
         if ( leftstate.power === 0 && rightstate.power === 0) {
             this.connection.send("s");
+            console.log("s");
         } else {
             let left_speed = this.pwm.left[leftstate.power];
             if(!leftstate.forward) left_speed = -left_speed;
@@ -240,7 +243,7 @@ class App extends React.Component {
                 let power = parseInt(attr.power, 10);
                 let dir_power = {
                     forward: (direction === 0),
-                    state: power-1,
+                    power: power,
                 };
                 if (wheel === 0) { // 左
                     carstate.left = dir_power;
@@ -248,6 +251,7 @@ class App extends React.Component {
                     carstate.right = dir_power;
                 }
                 nextnode = nextedge[0];
+                console.log("Wheel:"+power);
                 break;
             case "Waitmsecs":
                 if (this.state.timercount * 10 > attr.time) {
@@ -317,6 +321,17 @@ class App extends React.Component {
     stopProgram() {
         clearInterval(this.interval);
         this.setState({
+            timercount: 0,
+            carstate: {
+                left: {
+                    forward: true,
+                    power: 0,
+                },
+                right: {
+                    forward: true,
+                    power: 0,
+                }
+            },
             currentnode: 0,
             isrunning: false,
         });
@@ -376,7 +391,7 @@ class App extends React.Component {
                     return (
                         <Line key={this.nodes_num * node_from + index} x1={pos1[0]} y1={pos1[1]} id1={node_from}
                               x2={pos2[0]} y2={pos2[1]}
-                              id2={node_to} thickness={1} color="black"/>
+                              id2={node_to} thickness={1} color="black" />
                     );
                 }));
         });
@@ -392,9 +407,8 @@ class App extends React.Component {
         const distsensordata = this.state.sensordata.dist;
         const leftsensordata = this.state.sensordata.left;
         const rightsensordata = this.state.sensordata.right;
-
-        const leftspeed = this.state.carstate.left.power;
-        const rightspeed = this.state.carstate.right.power;
+        const leftspeed = this.pwm.left[this.state.carstate.left.power];
+        const rightspeed = this.pwm.right[this.state.carstate.right.power];
         const opobj = this.opobj;
 
         return (
@@ -444,8 +458,9 @@ class App extends React.Component {
     render() {
         const style = {
             width: "95vw",
-            height: "95vh",
+            height: "90vh",
             position: "static",
+            background: "#f0f0f0",
             border: "solid",
             padding: "0 16px",
             margin: "0 auto"
@@ -469,34 +484,34 @@ class App extends React.Component {
 
         return (
             <div>
-                <div onMouseMove={this._onMouseMove.bind(this)} onMouseUp={() => {
+                <Panel onMouseMove={this._onMouseMove.bind(this)} onMouseUp={() => {
                     this.setState({isMouseDown: false})
                 }} style={style}>
                     <div>
-                        <button onClick={() => {
+                        <Button color="primary" onClick={() => {
                             this.addComponent("Wheel");
-                        }}>Wheel
-                        </button>
-                        <button onClick={() => {
+                        }}>車を動かす
+                        </Button>
+                        <Button color="primary" onClick={() => {
                             this.addComponent("Waitmsecs");
-                        }}>Waitmsecs
-                        </button>
-                        <button onClick={() => {
+                        }}>待つ
+                        </Button>
+                        <Button color="primary" onClick={() => {
                             this.addComponent("BranchDistSensor");
-                        }}>BranchDistSensor
-                        </button>
-                        <button onClick={() => {
+                        }}>距離を測る
+                        </Button>
+                        <Button color="primary" onClick={() => {
                             this.addComponent("LineSensor");
-                        }}>LineSensor
-                        </button>
-                        <button onClick={() => {
+                        }}>明るさを測る
+                        </Button>
+                        <Button color="primary" onClick={() => {
                             this.addComponent("Stop");
-                        }}>Stop
-                        </button>
-                        <button onClick={() => {
+                        }}>車を止める
+                        </Button>
+                        <Button color="primary" onClick={() => {
                             this.addComponent("Readability");
-                        }}>Readability
-                        </button>
+                        }}>見やすくする
+                        </Button>
                     </div>
                     {this.renderEdges()}
                     {(() => {
@@ -506,14 +521,16 @@ class App extends React.Component {
                         }
                     })()}
                     {this.renderOpComponents()}
+                </Panel>
+                <div style={{textAlign: "right"}}>
+                    <Button color="primary" variant="fab" onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</Button>
+                    <Button color="danger" variant="fab" onClick={this.stopProgram.bind(this)}>やめる</Button>
+                    <Button color="accent" variant="fab" onClick={() => {
+                        this.connection = new WebSocket("ws:127.0.0.1:8000");
+                    }}>再接続
+                    </Button>
                 </div>
-                <button onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</button>
-                <button onClick={this.stopProgram.bind(this)}>やめる</button>
-                <button onClick={() => {
-                    this.connection = new WebSocket("ws:127.0.0.1:8000");
-                }}>再接続
-                </button>
-                {this.renderDebugWindow()}
+                <div>{this.renderDebugWindow()}</div>
             </div>
         );
     }

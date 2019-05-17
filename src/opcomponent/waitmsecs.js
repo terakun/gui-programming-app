@@ -1,5 +1,6 @@
 import React from 'react';
 import OpComponent from './opcomponent'
+import Panel from 'muicss/lib/react/panel';
 
 export default class Waitmsecs extends OpComponent {
     constructor(props) {
@@ -15,8 +16,9 @@ export default class Waitmsecs extends OpComponent {
         };
 
         this.textstyle = {
-            position: "absolute",
-            top: 30,
+            position: "relative",
+            textAlign: "center",
+            top: "30%",
         };
 
         this.bottomstyle = {
@@ -25,7 +27,7 @@ export default class Waitmsecs extends OpComponent {
             height: 10
         };
 
-        this.boxstyle.height = 80;
+        this.boxstyle.height = 60;
         this.props.funcs.setOpComponentAttribute(this.number, {time: this.state.time});
     }
 
@@ -43,7 +45,7 @@ export default class Waitmsecs extends OpComponent {
         }
 
         return (
-            <div style={this.boxstyle} className="box">
+            <Panel style={this.boxstyle} className="box">
                 <strong className="no-cursor">
                     <div ref='top' style={this.topstyle} onMouseDown={() => {
                         this.setCompFrom(this);
@@ -64,7 +66,7 @@ export default class Waitmsecs extends OpComponent {
                         this.setCompTo(this);
                     }}></div>
                 </strong>
-            </div>
+            </Panel>
         );
     }
 }

@@ -14,10 +14,9 @@ export default class OpComponent extends React.Component {
 
         this.boxstyle = {
             width: 100,
-            height: 50,
+            height: 60,
             left: "auto",
             top: "auto",
-            border: "solid",
             padding: "0 16px",
             color: "#000",
             background: "#fff",
@@ -79,6 +78,7 @@ export default class OpComponent extends React.Component {
         }
 
         return (
+
             <Draggable bounds="parent" cancel="strong" onStart={() => { this.props.funcs.onStartDrag(this); }} onStop={() => { this.props.funcs.onStopDrag(this); }}>
                 {this.renderOpComp()}
             </Draggable >

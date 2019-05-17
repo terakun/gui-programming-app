@@ -1,4 +1,5 @@
 import React from 'react';
+import Panel from 'muicss/lib/react/panel';
 
 export default class Line extends React.Component {
     render() {
@@ -12,13 +13,13 @@ export default class Line extends React.Component {
         const style = {
             padding: 0,
             margin: 0,
-            backgroundColor: color,
+            backgroundColor: "#000000",
             lineHeight: 1,
             position: "absolute",
             left: cx,
             top: cy,
             width: length,
-            height: 5,
+            height: 3,
             MozTransform: `rotate(${angle}deg)`,
             WebkitTransform: `rotate(${angle}deg)`,
             OTransform: `rotate(${angle}deg)`,
@@ -26,7 +27,7 @@ export default class Line extends React.Component {
             transform: `rotate(${angle}deg)`,
         };
         return (
-            <div style={style}/>
+            <Panel style={style}/>
         );
     }
 }
