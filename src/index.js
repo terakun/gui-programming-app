@@ -77,6 +77,7 @@ class App extends React.Component {
             },
             linesensor_threshold: 512,
             swaplinesensor: false,
+            swapmotor: 0,
             isrunning: false,
         };
 
@@ -264,8 +265,13 @@ class App extends React.Component {
             let right_speed = this.state.pwm.right[rightstate.power];
             if(!rightstate.forward) right_speed = -right_speed;
 
-            this.connection.send("r" + (-right_speed).toString());
-            this.connection.send("l" + (-left_speed).toString());
+            if(this.state.swapmotor===1){
+                this.connection.send("l" + (-right_speed).toString());
+                this.connection.send("r" + (-left_speed).toString());
+            } else {
+                this.connection.send("r" + (-right_speed).toString());
+                this.connection.send("l" + (-left_speed).toString());
+            }
         }
     }
 
@@ -540,6 +546,7 @@ class App extends React.Component {
                     <div>中<input value={this.state.pwm.left[2]} onChange={this.setPWMLeftValue.bind(this,2)} /></div>
                     <div>強<input value={this.state.pwm.left[3]} onChange={this.setPWMLeftValue.bind(this,3)} /></div>
                 </div>
+                <div>タイヤを入れ替える<input value={this.state.swapmotor} onChange={(e)=>{this.setState({swapmotor:e.target.value});}}></input></div>
 
                 <div>光センサ
                     <div>しきい値<input value={this.state.linesensor_threshold} onChange={(e)=>{this.setState({
