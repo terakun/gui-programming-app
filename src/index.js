@@ -264,8 +264,8 @@ class App extends React.Component {
             let right_speed = this.state.pwm.right[rightstate.power];
             if(!rightstate.forward) right_speed = -right_speed;
 
-            this.connection.send("r" + right_speed.toString());
-            this.connection.send("l" + left_speed.toString());
+            this.connection.send("r" + (-right_speed).toString());
+            this.connection.send("l" + (-left_speed).toString());
         }
     }
 
@@ -554,6 +554,7 @@ class App extends React.Component {
                 <div>rightsensordata: {rightsensordata}</div>
                 <div>pwmleft:{this.state.pwm.left}</div>
                 <div>pwmright:{this.state.pwm.right}</div>
+                <div>threshold:{this.state.linesensor_threshold}</div>
                 <div>swapLineSensor:{this.state.swaplinesensor}</div>
                 <div>leftspeed: {leftspeed}</div>
                 <div>rightspeed: {rightspeed}</div>
