@@ -33,7 +33,7 @@ export default class Waitmsecs extends OpComponent {
     }
 
     setTime(e) {
-        let t = parseInt(e.target.value,10) * 1000;
+        let t = parseFloat(e.target.value,10) * 1000;
         this.setState({time: t,});
         console.log(e.target.value);
         this.props.funcs.setOpComponentAttribute(this.number, {time: t});

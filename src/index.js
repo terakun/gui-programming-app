@@ -649,13 +649,15 @@ class App extends React.Component {
                     {this.renderOpComponents()}
                     <TrashBox ref='trashbox'/>
                 </Panel>
-                <div style={{textAlign: "right"}}>
-                    <Button color="primary" variant="fab" onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</Button>
-                    <Button color="danger" variant="fab" onClick={this.stopProgram.bind(this)}>やめる</Button>
-                    <Button color="accent" variant="fab" onClick={() => {
-                        this.connection = new WebSocket("ws:127.0.0.1:8000");
-                    }}>再接続
+                <div>
+                    <div style={{ textAlign: "right" }}>
+                        <Button color="primary" variant="fab" onClick={this.runProgram.bind(this)} disabled={this.state.isrunning}>実行</Button>
+                        <Button color="danger" variant="fab" onClick={this.stopProgram.bind(this)}>やめる</Button>
+                        <Button color="accent" variant="fab" onClick={() => {
+                            this.connection = new WebSocket("ws:127.0.0.1:8000");
+                        }}>再接続
                     </Button>
+                    </div>
                 </div>
                 <div>{this.renderDebugWindow()}</div>
             </div>
