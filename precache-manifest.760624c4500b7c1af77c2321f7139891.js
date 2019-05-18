@@ -4,15 +4,15 @@ self.__precacheManifest = [
     "url": "/gui-programming-app/static/js/runtime~main.79d1626b.js"
   },
   {
-    "revision": "c0cd998e8bbdb521c6ed",
-    "url": "/gui-programming-app/static/js/main.aed68263.chunk.js"
+    "revision": "56c28298c22c277c76a2",
+    "url": "/gui-programming-app/static/js/main.e2166ea0.chunk.js"
   },
   {
     "revision": "2910f2999d4989417ee9",
     "url": "/gui-programming-app/static/js/2.1ebe3d11.chunk.js"
   },
   {
-    "revision": "ce54e3bc0cccb564202991fd55cb4a33",
+    "revision": "9aac771f96b4a8f4839283bc0b928187",
     "url": "/gui-programming-app/index.html"
   }
 ];
