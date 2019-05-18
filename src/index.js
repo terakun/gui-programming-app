@@ -76,7 +76,7 @@ class App extends React.Component {
                 right: [0, 150, 200, 255],
             },
             linesensor_threshold: 512,
-            swaplinesensor: false,
+            swaplinesensor: 0,
             swapmotor: 0,
             isrunning: false,
         };
@@ -118,7 +118,7 @@ class App extends React.Component {
 
     onMessage(event) {
         let sensorarray = event.data.split(",").map(x => parseInt(x, 10));
-        if(!this.state.swaplinesensor){
+        if(this.state.swaplinesensor === 0){
             this.setState({
                 sensordata: {
                     dist: sensorarray[0],
@@ -298,9 +298,9 @@ class App extends React.Component {
                 });
                 break;
             case "Wheel":
-                let wheel = parseInt(attr.wheel, 10);
-                let direction = parseInt(attr.direction, 10);
-                let power = parseInt(attr.power, 10);
+                let wheel = attr.wheel;
+                let direction = attr.direction;
+                let power = attr.power;
                 let dir_power = {
                     forward: (direction === 0),
                     power: power,
@@ -327,7 +327,7 @@ class App extends React.Component {
                 }
                 break;
             case "BranchDistSensor":
-                let dist = parseInt(attr.dist, 10);
+                let dist = attr.dist;
                 if (dist > this.state.sensordata.dist) {
                     nextnode = this.opobj[currentnode].belowdstnode;
                 } else {
@@ -338,13 +338,13 @@ class App extends React.Component {
                 let isright = attr.isright;
                 console.log(isright);
                 if(isright){
-                    if (this.state.sensordata.right > this.state.linesensor_threshold) {
+                    if (this.state.sensordata.right < this.state.linesensor_threshold) {
                         nextnode = this.opobj[currentnode].belowdstnode;
                     } else {
                         nextnode = this.opobj[currentnode].abovedstnode;
                     }
                 } else {
-                    if (this.state.sensordata.left > this.state.linesensor_threshold) {
+                    if (this.state.sensordata.left < this.state.linesensor_threshold) {
                         nextnode = this.opobj[currentnode].belowdstnode;
                     } else {
                         nextnode = this.opobj[currentnode].abovedstnode;
@@ -514,13 +514,6 @@ class App extends React.Component {
         });
     }
 
-    swapLineSensor(e){
-        console.log(e.checked);
-        this.setState({
-            swaplinesensor: e.checked,
-        });
-    }
-
     renderDebugWindow() {
         const {mouseX, mouseY, currentnode, timercount} = this.state;
         const isMouseDown = this.state.isMouseDown.toString();
@@ -536,23 +529,23 @@ class App extends React.Component {
                 Debug Information
 
                 <div>タイヤ右
-                    <div>弱<input value={this.state.pwm.right[1]} onChange={this.setPWMRightValue.bind(this,1)} /></div>
-                    <div>中<input value={this.state.pwm.right[2]} onChange={this.setPWMRightValue.bind(this,2)} /></div>
-                    <div>強<input value={this.state.pwm.right[3]} onChange={this.setPWMRightValue.bind(this,3)} /></div>
+                    弱<input value={this.state.pwm.right[1]} onChange={this.setPWMRightValue.bind(this,1)} />
+                    中<input value={this.state.pwm.right[2]} onChange={this.setPWMRightValue.bind(this,2)} />
+                    強<input value={this.state.pwm.right[3]} onChange={this.setPWMRightValue.bind(this,3)} />
                 </div>
 
                 <div>タイヤ左
-                    <div>弱<input value={this.state.pwm.left[1]} onChange={this.setPWMLeftValue.bind(this,1)} /></div>
-                    <div>中<input value={this.state.pwm.left[2]} onChange={this.setPWMLeftValue.bind(this,2)} /></div>
-                    <div>強<input value={this.state.pwm.left[3]} onChange={this.setPWMLeftValue.bind(this,3)} /></div>
+                    弱<input value={this.state.pwm.left[1]} onChange={this.setPWMLeftValue.bind(this,1)} />
+                    中<input value={this.state.pwm.left[2]} onChange={this.setPWMLeftValue.bind(this,2)} />
+                    強<input value={this.state.pwm.left[3]} onChange={this.setPWMLeftValue.bind(this,3)} />
                 </div>
-                <div>タイヤを入れ替える(1にする)<input placeholder={0} onChange={(e)=>{this.setState({swapmotor:parseInt(e.target.value,10)});}}></input></div>
+                <div>タイヤを入れ替える(1にする)<input placeholder={0} onChange={(e)=>{this.setState({swapmotor:parseInt(e.target.value,10)});}}/></div>
 
                 <div>光センサ
                     <div>しきい値<input value={this.state.linesensor_threshold} onChange={(e)=>{this.setState({
                         linesensor_threshold: e.target.value,
                     })}} /></div>
-                    <div>左右入れ替え<input type="checkbox" checked={this.state.swaplinesensor} onChange={this.swapLineSensor.bind(this)} /></div>
+                    <div>左右入れ替え(1にする)<input placeholder={0} onChange={(e)=>{this.setState({swaplinesensor:parseInt(e.target.value,10)});}}/></div>
                 </div>
                 <div>{mouseX} {mouseY} {isMouseDown}</div>
                 <div>currentnode: {currentnode}</div>

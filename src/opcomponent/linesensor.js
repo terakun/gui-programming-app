@@ -7,13 +7,13 @@ export default class LineSensor extends OpComponent {
         super(props);
         this.state = {
             ...this.state,
-            isright: 0,
+            isright: true,
         };
         this.selected_above = false;
         this.abovedstnode = null;
         this.belowdstnode = null;
 
-        this.props.funcs.setOpComponentAttribute(this.number, {dist: this.state.dist});
+        this.props.funcs.setOpComponentAttribute(this.number, {isright: this.state.isright});
         this.setBranch = this.setBranch.bind(this);
 
         this.boxstyle.width = 160;
@@ -55,8 +55,9 @@ export default class LineSensor extends OpComponent {
     }
 
     setIsright(e) {
-        this.setState({isright: e.target.value,});
-        this.props.funcs.setOpComponentAttribute(this.number, {isright: e.target.value});
+        let isright = e.target.value === 'true';
+        this.setState({isright: isright,});
+        this.props.funcs.setOpComponentAttribute(this.number, {isright: isright});
     }
 
     setBranch(id) {
@@ -99,7 +100,7 @@ export default class LineSensor extends OpComponent {
                     }}></div>
                 </strong>
                 <div style={this.textstyle}>
-                    <select name="isright" defaultValue={true} onChange={this.setIsright.bind(this)}>
+                    <select name="isright" defaultValue={this.state.isright} onChange={this.setIsright.bind(this)}>
                         <option value={false}>左</option>
                         <option value={true}>右</option>
                     </select>

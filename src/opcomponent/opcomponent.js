@@ -93,11 +93,12 @@ export default class OpComponent extends React.Component {
             );
         }else{
             return (
-                <Draggable bounds="parent" cancel="strong" onStart={() => { this.props.funcs.onStartDrag(this); }} onStop={() => { this.props.funcs.onStopDrag(this); }}>
+                <Draggable bounds="parent" cancel="strong"
+                    onStart={() => { this.props.funcs.onStartDrag(this); }}
+                    onStop={() => { this.props.funcs.onStopDrag(this); }}>
                     {this.renderOpComp()}
                 </Draggable >
             );
         }
     }
 }
-

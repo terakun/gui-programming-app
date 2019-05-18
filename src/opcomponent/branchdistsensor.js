@@ -55,8 +55,9 @@ export default class BranchDistSensor extends OpComponent {
     }
 
     setDist(e) {
-        this.setState({dist: e.target.value,});
-        this.props.funcs.setOpComponentAttribute(this.number, {dist: e.target.value});
+        let dist = parseInt(e.target.value,10);
+        this.setState({dist: dist});
+        this.props.funcs.setOpComponentAttribute(this.number, {dist: dist});
     }
 
     setBranch(id) {

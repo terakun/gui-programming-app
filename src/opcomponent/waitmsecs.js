@@ -33,9 +33,10 @@ export default class Waitmsecs extends OpComponent {
     }
 
     setTime(e) {
-        this.setState({time: e.target.value,});
+        let t = parseInt(e.target.value,10) * 1000;
+        this.setState({time: t,});
         console.log(e.target.value);
-        this.props.funcs.setOpComponentAttribute(this.number, {time: e.target.value});
+        this.props.funcs.setOpComponentAttribute(this.number, {time: t});
     }
 
     renderOpComp() {
@@ -58,7 +59,7 @@ export default class Waitmsecs extends OpComponent {
                     <strong className="no-cursor">
                         <input style={{width: 40,}} onChange={this.setTime.bind(this)}/>
                     </strong>
-                    ms 待つ
+                    秒 待つ
                 </div>
                 <strong className="no-cursor">
                     <div ref='bottom' style={this.bottomstyle} onMouseDown={() => {

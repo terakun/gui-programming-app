@@ -9,7 +9,7 @@ export default class Wheel extends OpComponent {
       ...this.state,
       wheel: 0,
       direction: 0,
-      power: 0,
+      power: 3,
     };
     this.props.funcs.setOpComponentAttribute(this.number,this.getAttribute());
     this.boxstyle.width = 180;
@@ -44,19 +44,19 @@ export default class Wheel extends OpComponent {
   setWheel(e) {
     this.setState({ wheel: e.target.value, });
     let attr = this.getAttribute();
-    attr.wheel = e.target.value;
+    attr.wheel = parseInt(e.target.value,10);
     this.props.funcs.setOpComponentAttribute(this.number,attr);
   }
   setDirection(e) {
     this.setState({ direction: e.target.value, });
     let attr = this.getAttribute();
-    attr.direction = e.target.value;
+    attr.direction = parseInt(e.target.value,10);
     this.props.funcs.setOpComponentAttribute(this.number,attr);
   }
   setPower(e) {
     this.setState({ power: e.target.value, });
     let attr = this.getAttribute();
-    attr.power = e.target.value;
+    attr.power = parseInt(e.target.value,10);
     this.props.funcs.setOpComponentAttribute(this.number,attr);
   }
 
@@ -75,17 +75,17 @@ export default class Wheel extends OpComponent {
           <div ref='top' style={this.topstyle} onMouseUp={() => {this.setCompTo(this);}}></div>
           </strong>
           <div style={this.textstyle}>
-            <select name="wheel" defaultValue={0} onChange={this.setWheel.bind(this)}>
+            <select name="wheel" defaultValue={this.state.wheel} onChange={this.setWheel.bind(this)}>
             <option value={0}>左</option>
             <option value={1}>右</option>
             </select>
             タイヤを
-            <select name="direction" defaultValue={0} onChange={this.setDirection.bind(this)}>
+            <select name="direction" defaultValue={this.state.direction} onChange={this.setDirection.bind(this)}>
             <option value={0}>前</option>
             <option value={1}>後</option>
             </select>
             に
-            <select name="power" defaultValue={0} onChange={this.setPower.bind(this)}>
+            <select name="power" defaultValue={this.state.power} onChange={this.setPower.bind(this)}>
             <option value={3}>強</option>
             <option value={2}>中</option>
             <option value={1}>弱</option>
