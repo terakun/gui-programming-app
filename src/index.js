@@ -546,7 +546,7 @@ class App extends React.Component {
                     <div>中<input value={this.state.pwm.left[2]} onChange={this.setPWMLeftValue.bind(this,2)} /></div>
                     <div>強<input value={this.state.pwm.left[3]} onChange={this.setPWMLeftValue.bind(this,3)} /></div>
                 </div>
-                <div>タイヤを入れ替える<input value={this.state.swapmotor} onChange={(e)=>{this.setState({swapmotor:e.target.value});}}></input></div>
+                <div>タイヤを入れ替える(1にする)<input placeholder={0} onChange={(e)=>{this.setState({swapmotor:parseInt(e.target.value,10)});}}></input></div>
 
                 <div>光センサ
                     <div>しきい値<input value={this.state.linesensor_threshold} onChange={(e)=>{this.setState({
@@ -562,6 +562,7 @@ class App extends React.Component {
                 <div>pwmleft:{this.state.pwm.left}</div>
                 <div>pwmright:{this.state.pwm.right}</div>
                 <div>threshold:{this.state.linesensor_threshold}</div>
+                <div>swapmotor:{this.state.swapmotor}</div>
                 <div>swapLineSensor:{this.state.swaplinesensor}</div>
                 <div>leftspeed: {leftspeed}</div>
                 <div>rightspeed: {rightspeed}</div>
