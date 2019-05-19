@@ -55,7 +55,8 @@ export default class BranchDistSensor extends OpComponent {
     }
 
     setDist(e) {
-        let dist = parseInt(e.target.value,10);
+        let dist = 0;
+        if(e.target.value) dist = parseInt(e.target.value,10);
         this.setState({dist: dist});
         this.props.funcs.setOpComponentAttribute(this.number, {dist: dist});
     }
@@ -102,7 +103,7 @@ export default class BranchDistSensor extends OpComponent {
                 <div style={this.textstyle}>
                     距離センサーが
                     <strong className="no-cursor">
-                        <input style={{width: 40}} value={this.state.dist} onChange={this.setDist.bind(this)}/>
+                        <input style={{width: 40}} defaultValue={this.state.dist} onChange={this.setDist.bind(this)}/>
                     </strong>
                     cm
                 </div>
